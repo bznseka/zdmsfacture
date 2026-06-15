@@ -3,25 +3,120 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --background: #F4F4F6;
+  --foreground: #1E1B4B; /* Dark indigo for premium text */
 }
 
 body {
   color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--background);
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+/* Custom scrollbar for premium feel */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #E4E4E7;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #D4D4D8;
+}
+
+/* Micro-animations and effects */
+.hover-card-effect {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-card-effect:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 20px -8px rgba(124, 58, 237, 0.12), 0 4px 6px -2px rgba(124, 58, 237, 0.04);
+}
+
+.glass-effect {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Custom styles for recharts tooltip */
+.recharts-default-tooltip {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid #E4E4E7 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05) !important;
+  backdrop-filter: blur(4px);
+}
+
+/* Hide scrollbar for Chrome, Safari, Opera, Firefox and IE/Edge */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Printing styles for PDF generation */
+@media print {
+  body {
+    background-color: #ffffff !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-size: 12px !important;
+  }
+
+  /* Hide all structural layout wrappers */
+  aside, 
+  header, 
+  button, 
+  select, 
+  .no-print {
+    display: none !important;
+  }
+
+  /* Reset layout grids to take full page width */
+  .lg\:pl-64 {
+    padding-left: 0 !important;
+  }
+
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+
+  .grid {
+    display: block !important;
+  }
+
+  .lg\:col-span-8 {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Style the invoice sheet container */
+  .print-sheet {
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    aspect-ratio: auto !important;
+    height: auto !important;
   }
 }
