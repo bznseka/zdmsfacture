@@ -26,6 +26,7 @@ import {
   X,
   Sparkles
 } from 'lucide-react';
+import './landing.css';
 
 export default function LandingPage() {
   const { user, authLoading } = useApp();
@@ -34,11 +35,23 @@ export default function LandingPage() {
   // Mobile drawer state
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  // Sticky header transition state on scroll
+  const [scrolled, setScrolled] = useState(false);
+
   // Newsletter state
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [newsletterStatus, setNewsletterStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [toastMessage, setToastMessage] = useState('');
   const [showToast, setShowToast] = useState(false);
+
+  // Monitor scroll for header shrinking and glassmorphism updates
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Reveal Animations on Scroll
   useEffect(() => {
@@ -68,7 +81,7 @@ export default function LandingPage() {
     const rect = btn.getBoundingClientRect();
     const x = e.clientX - rect.left - rect.width / 2;
     const y = e.clientY - rect.top - rect.height / 2;
-    btn.style.transform = `translate(${x * 0.15}px, ${y * 0.15}px)`;
+    btn.style.transform = `translate(${x * 0.12}px, ${y * 0.12}px)`;
   };
 
   const handleMouseLeave = (e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => {
@@ -85,7 +98,7 @@ export default function LandingPage() {
     }
   };
 
-  // Newsletter subscription handler
+  // Newsletter submission handler
   const handleNewsletterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newsletterEmail) return;
@@ -122,44 +135,48 @@ export default function LandingPage() {
         </div>
       )}
 
-      {/* Top Navigation */}
-      <header className="sticky top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-slate-100/80 shadow-sm">
-        <nav className="flex justify-between items-center px-6 py-4 max-w-7xl mx-auto">
-          {/* Logo */}
-          <Link href={user ? "/overview" : "/"} className="flex items-center gap-2 group">
-            <div className="w-10 h-10 rounded-xl bg-[#7C3AED] flex items-center justify-center shadow-md shadow-[#7C3AED]/20 transition-transform group-hover:scale-105">
-              <FileText className="w-6 h-6 text-white" />
+      {/* Top Navigation - height, padding, shadow, border adapt dynamically on scroll */}
+      <header className={`sticky top-0 w-full z-50 transition-all duration-300 ${
+        scrolled 
+          ? 'py-3 bg-white/95 shadow-md border-b border-slate-100' 
+          : 'py-5 bg-white/80 backdrop-blur-md border-b border-slate-100/50'
+      }`}>
+        <nav className="flex justify-between items-center px-6 max-w-7xl mx-auto">
+          {/* Logo with rotation and elevation hover micro-animation */}
+          <Link href={user ? "/overview" : "/"} className="flex items-center gap-2 group logo-animate">
+            <div className="w-10 h-10 rounded-xl bg-[#7C3AED] flex items-center justify-center shadow-md shadow-[#7C3AED]/25 logo-icon-wrapper">
+              <FileText className="w-6 h-6 text-white logo-icon" />
             </div>
             <span className="font-display text-2xl font-black tracking-tight text-[#1E1B4B]">
               zdms<span className="text-[#7C3AED]">Facture</span>
             </span>
           </Link>
 
-          {/* Desktop Navigation Links */}
+          {/* Desktop Navigation Links - slide line animation nav-link-effect */}
           <div className="hidden md:flex items-center gap-8">
             <a 
-              className="text-slate-600 hover:text-[#7C3AED] transition-colors duration-300 font-semibold text-sm" 
+              className="text-slate-600 hover:text-[#7C3AED] transition-colors duration-300 font-semibold text-sm nav-link-effect" 
               href="#solution"
               onClick={(e) => handleScrollToSection(e, 'solution')}
             >
               Solution
             </a>
             <a 
-              className="text-slate-600 hover:text-[#7C3AED] transition-colors duration-300 font-semibold text-sm" 
+              className="text-slate-600 hover:text-[#7C3AED] transition-colors duration-300 font-semibold text-sm nav-link-effect" 
               href="#tarifs"
               onClick={(e) => handleScrollToSection(e, 'tarifs')}
             >
               Tarifs
             </a>
             <a 
-              className="text-slate-600 hover:text-[#7C3AED] transition-colors duration-300 font-semibold text-sm" 
+              className="text-slate-600 hover:text-[#7C3AED] transition-colors duration-300 font-semibold text-sm nav-link-effect" 
               href="#temoignages"
               onClick={(e) => handleScrollToSection(e, 'temoignages')}
             >
               Témoignages
             </a>
             <a 
-              className="text-slate-600 hover:text-[#7C3AED] transition-colors duration-300 font-semibold text-sm" 
+              className="text-slate-600 hover:text-[#7C3AED] transition-colors duration-300 font-semibold text-sm nav-link-effect" 
               href="#footer"
               onClick={(e) => handleScrollToSection(e, 'footer')}
             >
@@ -182,13 +199,13 @@ export default function LandingPage() {
               <>
                 <Link 
                   href="/login"
-                  className="text-slate-600 font-semibold text-sm hover:text-[#7C3AED] transition-colors px-4 py-2"
+                  className="text-slate-600 font-semibold text-sm hover:text-[#7C3AED] transition-colors px-4 py-2 nav-link-effect"
                 >
                   Connexion
                 </Link>
                 <Link 
                   href="/login?mode=signup"
-                  className="bg-[#7C3AED] text-white px-6 py-2.5 rounded-xl font-semibold text-sm hover:bg-[#6D28D9] transition-all hover:scale-105 active:scale-95 shadow-lg shadow-[#7C3AED]/15"
+                  className="bg-[#7C3AED] text-white px-6 py-2.5 rounded-xl font-semibold text-sm hover:bg-[#6D28D9] transition-all hover:scale-105 active:scale-95 shadow-lg shadow-[#7C3AED]/15 cta-shadow-pulse"
                 >
                   Créer un compte
                 </Link>
@@ -201,7 +218,7 @@ export default function LandingPage() {
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="md:hidden p-2 text-slate-700 hover:text-[#7C3AED] transition-colors"
           >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {mobileMenuOpen ? <X className="w-6 h-6 animate-scale-in" /> : <Menu className="w-6 h-6 animate-scale-in" />}
           </button>
         </nav>
 
@@ -273,24 +290,24 @@ export default function LandingPage() {
 
       <main className="gradient-mesh">
         {/* Hero Section */}
-        <section className="relative pt-20 pb-24 md:pb-32 px-6 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          <div className="reveal active">
+        <section className="relative pt-12 md:pt-20 pb-24 md:pb-32 px-6 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          <div className="reveal active flex flex-col items-start text-left">
             <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#7C3AED]/10 text-[#7C3AED] font-semibold text-xs tracking-wider uppercase mb-6 animate-pulse">
-              <Sparkles className="w-4 h-4" /> Faites-vous payer immédiatement
+              <Sparkles className="w-4 h-4 animate-spin" style={{ animationDuration: '6s' }} /> Faites-vous payer immédiatement
             </span>
             <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl mb-6 leading-[1.1] font-black text-[#1E1B4B] tracking-tight">
               Fini les factures sur <span className="text-[#7C3AED] relative inline-block">Word <span className="absolute bottom-1 left-0 w-full h-[6px] bg-[#7C3AED]/15 rounded-full"></span></span> et <span className="text-[#7C3AED] relative inline-block">Excel <span className="absolute bottom-1 left-0 w-full h-[6px] bg-[#7C3AED]/15 rounded-full"></span></span>
             </h1>
-            <p className="text-lg text-slate-600 mb-10 max-w-lg leading-relaxed">
+            <p className="text-base sm:text-lg text-slate-600 mb-10 max-w-lg leading-relaxed">
               Le SaaS de facturation simple, fluide et moderne conçu spécifiquement pour les entrepreneurs et entreprises d&apos;Afrique en quête de professionnalisme.
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
               <button 
                 onMouseMove={handleMouseMove}
                 onMouseLeave={handleMouseLeave}
                 onClick={() => router.push(user ? "/overview" : "/login?mode=signup")}
-                className="magnetic-btn bg-[#1E1B4B] text-white px-8 py-4 rounded-xl font-semibold flex items-center justify-center gap-2 group shadow-xl hover:bg-slate-900 transition-all cursor-pointer"
+                className="magnetic-btn bg-[#1E1B4B] text-white px-8 py-4 rounded-xl font-semibold flex items-center justify-center gap-2 group shadow-xl hover:bg-slate-900 transition-all cursor-pointer w-full sm:w-auto cta-shadow-pulse"
               >
                 {user ? "Accéder au Tableau de Bord" : "Commencer gratuitement"}
                 <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
@@ -299,14 +316,14 @@ export default function LandingPage() {
                 onMouseMove={handleMouseMove}
                 onMouseLeave={handleMouseLeave}
                 onClick={() => router.push(user ? "/overview" : "/login")}
-                className="magnetic-btn border-[1.5px] border-slate-200 text-[#1E1B4B] px-8 py-4 rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-[#7C3AED]/5 hover:border-[#7C3AED]/30 transition-colors cursor-pointer"
+                className="magnetic-btn border-[1.5px] border-slate-200 text-[#1E1B4B] px-8 py-4 rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-[#7C3AED]/5 hover:border-[#7C3AED]/30 transition-colors cursor-pointer w-full sm:w-auto"
               >
                 Voir la démo
                 <Play className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="mt-12 flex items-center gap-4 grayscale opacity-60">
+            <div className="mt-12 flex flex-col sm:flex-row items-start sm:items-center gap-4 grayscale opacity-60">
               <span className="text-xs font-bold tracking-widest text-slate-500 uppercase">Approuvé par la sécurité</span>
               <div className="flex gap-4">
                 <ShieldCheck className="w-6 h-6 text-slate-700" />
@@ -316,9 +333,9 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="relative reveal active delay-200">
+          <div className="relative reveal active delay-200 w-full">
             {/* Dashboard Mock Screen Container */}
-            <div className="relative z-10 rounded-[32px] overflow-hidden floating-card aspect-[4/3] bg-white border border-slate-200/50 p-4 shadow-2xl">
+            <div className="relative z-10 rounded-[32px] overflow-hidden floating-card aspect-[4/3] bg-white border border-slate-200/50 p-3 sm:p-4 shadow-2xl">
               <img 
                 alt="Dashboard zdmsFacture" 
                 className="w-full h-full object-cover rounded-2xl shadow-inner border border-slate-100" 
@@ -327,11 +344,11 @@ export default function LandingPage() {
             </div>
 
             {/* Glowing Orbs */}
-            <div className="absolute -top-12 -right-8 w-48 h-48 bg-[#7C3AED]/5 rounded-full blur-3xl"></div>
-            <div className="absolute -bottom-12 -left-8 w-64 h-64 bg-[#7C3AED]/8 rounded-full blur-[90px]"></div>
+            <div className="absolute -top-12 -right-8 w-32 sm:w-48 h-32 sm:h-48 bg-[#7C3AED]/5 rounded-full blur-3xl"></div>
+            <div className="absolute -bottom-12 -left-8 w-48 sm:w-64 h-48 sm:h-64 bg-[#7C3AED]/8 rounded-full blur-[90px]"></div>
             
-            {/* Floating Widget */}
-            <div className="absolute top-1/2 -right-10 transform -translate-y-1/2 hidden md:block z-20">
+            {/* Floating Widget - hidden on small screens */}
+            <div className="absolute top-1/2 -right-6 transform -translate-y-1/2 hidden md:block z-20">
               <div className="bg-white p-5 rounded-2xl shadow-2xl border border-slate-100 flex flex-col gap-1.5 transition-transform hover:scale-105">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-600">
@@ -348,46 +365,46 @@ export default function LandingPage() {
         </section>
 
         {/* Problem Section */}
-        <section className="py-24 px-6 bg-slate-100/40">
+        <section className="py-20 sm:py-24 px-6 bg-slate-100/40">
           <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-20 reveal">
+            <div className="text-center mb-16 sm:mb-20 reveal">
               <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold mb-6 text-[#1E1B4B]">
                 Pourquoi choisir <span className="text-[#7C3AED]">zdmsFacture</span> ?
               </h2>
-              <p className="text-slate-600 text-lg max-w-2xl mx-auto leading-relaxed">
+              <p className="text-slate-600 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
                 L&apos;époque des factures Word mal alignées et des erreurs de calcul est révolue. Passez à la vitesse supérieure.
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {/* Problem 1 */}
-              <div className="reveal p-8 rounded-[32px] bg-white border border-slate-100 floating-card flex flex-col items-start">
-                <div className="w-14 h-14 bg-red-500/10 text-red-600 rounded-2xl flex items-center justify-center mb-8">
+              <div className="reveal p-6 sm:p-8 rounded-[32px] bg-white border border-slate-100 floating-card flex flex-col items-start">
+                <div className="w-14 h-14 bg-red-500/10 text-red-600 rounded-2xl flex items-center justify-center mb-6 sm:mb-8">
                   <Ban className="w-8 h-8" />
                 </div>
-                <h3 className="font-display text-2xl font-bold mb-4 text-[#1E1B4B]">Factures &quot;Amateur&quot;</h3>
+                <h3 className="font-display text-xl sm:text-2xl font-bold mb-4 text-[#1E1B4B]">Factures &quot;Amateur&quot;</h3>
                 <p className="text-slate-600 leading-relaxed text-sm">
                   Arrêtez d&apos;envoyer des fichiers Word pixelisés ou décalés. Votre image de marque mérite une présentation A4 impeccable qui inspire confiance instantanément.
                 </p>
               </div>
 
               {/* Problem 2 */}
-              <div className="reveal delay-100 p-8 rounded-[32px] bg-white border border-slate-100 floating-card flex flex-col items-start">
-                <div className="w-14 h-14 bg-[#7C3AED]/10 text-[#7C3AED] rounded-2xl flex items-center justify-center mb-8">
+              <div className="reveal delay-100 p-6 sm:p-8 rounded-[32px] bg-white border border-slate-100 floating-card flex flex-col items-start">
+                <div className="w-14 h-14 bg-[#7C3AED]/10 text-[#7C3AED] rounded-2xl flex items-center justify-center mb-6 sm:mb-8">
                   <Calculator className="w-8 h-8" />
                 </div>
-                <h3 className="font-display text-2xl font-bold mb-4 text-[#1E1B4B]">Erreurs de TVA</h3>
+                <h3 className="font-display text-xl sm:text-2xl font-bold mb-4 text-[#1E1B4B]">Erreurs de TVA</h3>
                 <p className="text-slate-600 leading-relaxed text-sm">
                   Les calculs manuels de la TVA fiscale de 18% (ou autres taxes) sont des sources d&apos;erreurs coûteuses. Automatisez vos sous-totaux et taxes instantanément.
                 </p>
               </div>
 
               {/* Problem 3 */}
-              <div className="reveal delay-200 p-8 rounded-[32px] bg-white border border-slate-100 floating-card flex flex-col items-start">
-                <div className="w-14 h-14 bg-amber-500/10 text-amber-600 rounded-2xl flex items-center justify-center mb-8">
+              <div className="reveal delay-200 p-6 sm:p-8 rounded-[32px] bg-white border border-slate-100 floating-card flex flex-col items-start">
+                <div className="w-14 h-14 bg-amber-500/10 text-amber-600 rounded-2xl flex items-center justify-center mb-6 sm:mb-8">
                   <Clock className="w-8 h-8" />
                 </div>
-                <h3 className="font-display text-2xl font-bold mb-4 text-[#1E1B4B]">Impayés Invisibles</h3>
+                <h3 className="font-display text-xl sm:text-2xl font-bold mb-4 text-[#1E1B4B]">Impayés Invisibles</h3>
                 <p className="text-slate-600 leading-relaxed text-sm">
                   Difficile de savoir qui vous doit quoi avec un simple fichier Excel. Suivez chaque créance, identifiez les retards et agissez rapidement.
                 </p>
@@ -397,18 +414,18 @@ export default function LandingPage() {
         </section>
 
         {/* Features Bento Grid Section */}
-        <section className="py-24 px-6 max-w-7xl mx-auto" id="solution">
-          <div className="text-center mb-20 reveal">
+        <section className="py-20 sm:py-24 px-6 max-w-7xl mx-auto" id="solution">
+          <div className="text-center mb-16 sm:mb-20 reveal">
             <span className="text-[#7C3AED] font-semibold tracking-wider text-xs uppercase mb-4 block">Fonctionnalités</span>
             <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-[#1E1B4B]">Tout ce dont vous avez besoin</h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-6 reveal">
-            {/* Bento Card 1 (Large - spans 2 cols & 2 rows) */}
-            <div className="md:col-span-2 md:row-span-2 p-12 rounded-[40px] bg-[#1E1B4B] text-white overflow-hidden relative group flex flex-col justify-between min-h-[380px] hover:shadow-2xl transition-all duration-300">
+            {/* Bento Card 1 (Large - spans 2 cols & 2 rows on medium+) */}
+            <div className="md:col-span-2 md:row-span-2 p-8 sm:p-12 rounded-[40px] bg-[#1E1B4B] text-white overflow-hidden relative group flex flex-col justify-between min-h-[380px] hover:shadow-2xl transition-all duration-300">
               <div className="relative z-10">
-                <h3 className="font-display text-3xl font-extrabold mb-6 leading-tight">Factures professionnelles en 2 clics</h3>
-                <p className="opacity-75 text-lg mb-8 leading-relaxed">
+                <h3 className="font-display text-2xl sm:text-3xl font-extrabold mb-6 leading-tight">Factures professionnelles en 2 clics</h3>
+                <p className="opacity-75 text-base sm:text-lg mb-8 leading-relaxed">
                   Générez des PDF élégants conformes aux normes de la RDC et internationales. Votre identité, vos devises (USD & CDF), votre succès.
                 </p>
               </div>
@@ -427,13 +444,13 @@ export default function LandingPage() {
               </div>
             </div>
 
-            {/* Bento Card 2 (Spans 2 columns) */}
-            <div className="md:col-span-2 p-10 rounded-[40px] bg-[#EDE9FE]/50 border border-[#EDE9FE] flex flex-col sm:flex-row gap-6 floating-card">
+            {/* Bento Card 2 (Spans 2 columns on medium+) */}
+            <div className="md:col-span-2 p-8 sm:p-10 rounded-[40px] bg-[#EDE9FE]/50 border border-[#EDE9FE] flex flex-col sm:flex-row gap-6 floating-card">
               <div className="w-12 h-12 bg-[#7C3AED]/10 text-[#7C3AED] rounded-2xl flex items-center justify-center shrink-0">
                 <Percent className="w-6 h-6" />
               </div>
               <div>
-                <h3 className="font-display text-2xl font-bold mb-3 text-[#1E1B4B]">TVA & Double Devise fluides</h3>
+                <h3 className="font-display text-xl sm:text-2xl font-bold mb-3 text-[#1E1B4B]">TVA & Double Devise fluides</h3>
                 <p className="text-slate-600 text-sm leading-relaxed">
                   Configurez vos taux de taxe et convertissez automatiquement vos montants de Dollars (USD) en Francs Congolais (CDF) selon le taux de change en direct.
                 </p>
@@ -441,12 +458,12 @@ export default function LandingPage() {
             </div>
 
             {/* Bento Card 3 (1 column) */}
-            <div className="p-10 rounded-[40px] bg-white border border-slate-100 flex flex-col gap-6 floating-card">
+            <div className="p-8 sm:p-10 rounded-[40px] bg-white border border-slate-100 flex flex-col gap-6 floating-card">
               <div className="w-12 h-12 bg-emerald-500/10 text-emerald-600 rounded-2xl flex items-center justify-center shrink-0">
                 <TrendingUp className="w-6 h-6" />
               </div>
               <div>
-                <h3 className="font-display text-xl font-bold mb-3 text-[#1E1B4B]">Suivi temps réel</h3>
+                <h3 className="font-display text-lg sm:text-xl font-bold mb-3 text-[#1E1B4B]">Suivi temps réel</h3>
                 <p className="text-slate-600 text-xs leading-relaxed">
                   Graphiques interactifs de revenus, indicateurs de croissance mensuels et de recouvrement sur votre Dashboard.
                 </p>
@@ -454,12 +471,12 @@ export default function LandingPage() {
             </div>
 
             {/* Bento Card 4 (1 column - Primary Accent) */}
-            <div className="p-10 rounded-[40px] bg-[#7C3AED] text-white flex flex-col gap-6 floating-card">
+            <div className="p-8 sm:p-10 rounded-[40px] bg-[#7C3AED] text-white flex flex-col gap-6 floating-card">
               <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center shrink-0">
                 <Users className="w-6 h-6" />
               </div>
               <div>
-                <h3 className="font-display text-xl font-bold mb-3 text-white">Clients & Paiements</h3>
+                <h3 className="font-display text-lg sm:text-xl font-bold mb-3 text-white">Clients & Paiements</h3>
                 <p className="text-white/80 text-xs leading-relaxed">
                   Gerez votre base de clients, enregistrez les règlements Mobile Money (M-Pesa, Orange, Airtel) ou Cash en un seul point.
                 </p>
@@ -468,41 +485,36 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* How It Works Section */}
-        <section className="py-24 px-6 bg-[#1E1B4B] text-white relative overflow-hidden">
-          {/* Subtle decoration lines */}
-          <div className="absolute inset-0 opacity-5 pointer-events-none">
-            <div className="absolute top-0 left-0 w-full h-full" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, white 1px, transparent 1px)', backgroundSize: '60px 60px' }}></div>
-          </div>
-          
-          <div className="max-w-7xl mx-auto text-center mb-24 reveal">
+        {/* How It Works Section - dots pattern moved to CSS class 'how-works-pattern' */}
+        <section className="py-24 px-6 bg-[#1E1B4B] text-white relative overflow-hidden how-works-pattern">
+          <div className="max-w-7xl mx-auto text-center mb-20 sm:mb-24 reveal">
             <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-black text-white">Comment ça marche ?</h2>
-            <p className="opacity-60 text-lg mt-4 max-w-lg mx-auto">Plus simple que d&apos;envoyer un paiement Mobile Money.</p>
+            <p className="opacity-60 text-base sm:text-lg mt-4 max-w-lg mx-auto">Plus simple que d&apos;envoyer un paiement Mobile Money.</p>
           </div>
 
-          <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-16 relative">
+          <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-16 relative">
             {/* Steps connection line */}
             <div className="hidden md:block absolute top-12 left-1/6 right-1/6 h-[1.5px] bg-[#7C3AED]/35"></div>
 
             {/* Step 1 */}
             <div className="flex flex-col items-center text-center reveal">
-              <div className="w-24 h-24 rounded-full bg-[#7C3AED]/10 border-2 border-[#7C3AED] flex items-center justify-center mb-8 relative z-10 text-3xl font-extrabold text-[#7C3AED] shadow-lg shadow-[#7C3AED]/20">1</div>
-              <h3 className="font-display text-2xl font-bold mb-4">Créez votre compte</h3>
-              <p className="opacity-60 px-6 text-sm">Inscription rapide en 30 secondes avec votre email. Sans carte bancaire.</p>
+              <div className="w-24 h-24 rounded-full bg-[#7C3AED]/10 border-2 border-[#7C3AED] flex items-center justify-center mb-6 sm:mb-8 relative z-10 text-3xl font-extrabold text-[#7C3AED] shadow-lg shadow-[#7C3AED]/20">1</div>
+              <h3 className="font-display text-xl sm:text-2xl font-bold mb-4">Créez votre compte</h3>
+              <p className="opacity-60 px-4 sm:px-6 text-sm">Inscription rapide en 30 secondes avec votre email. Sans carte bancaire.</p>
             </div>
 
             {/* Step 2 */}
             <div className="flex flex-col items-center text-center reveal delay-100">
-              <div className="w-24 h-24 rounded-full bg-[#7C3AED]/10 border-2 border-[#7C3AED] flex items-center justify-center mb-8 relative z-10 text-3xl font-extrabold text-[#7C3AED] shadow-lg shadow-[#7C3AED]/20">2</div>
-              <h3 className="font-display text-2xl font-bold mb-4">Configurez & Créez</h3>
-              <p className="opacity-60 px-6 text-sm">Définissez vos informations d&apos;entreprise, ajoutez vos clients et générez votre première facture.</p>
+              <div className="w-24 h-24 rounded-full bg-[#7C3AED]/10 border-2 border-[#7C3AED] flex items-center justify-center mb-6 sm:mb-8 relative z-10 text-3xl font-extrabold text-[#7C3AED] shadow-lg shadow-[#7C3AED]/20">2</div>
+              <h3 className="font-display text-xl sm:text-2xl font-bold mb-4">Configurez & Créez</h3>
+              <p className="opacity-60 px-4 sm:px-6 text-sm">Définissez vos informations d&apos;entreprise, ajoutez vos clients et générez votre première facture.</p>
             </div>
 
             {/* Step 3 */}
             <div className="flex flex-col items-center text-center reveal delay-200">
-              <div className="w-24 h-24 rounded-full bg-[#7C3AED]/10 border-2 border-[#7C3AED] flex items-center justify-center mb-8 relative z-10 text-3xl font-extrabold text-[#7C3AED] shadow-lg shadow-[#7C3AED]/20">3</div>
-              <h3 className="font-display text-2xl font-bold mb-4">Envoyez & Suivez</h3>
-              <p className="opacity-60 px-6 text-sm">Exportez en format PDF officiel, encaissez les règlements et suivez l&apos;évolution de vos finances en temps réel.</p>
+              <div className="w-24 h-24 rounded-full bg-[#7C3AED]/10 border-2 border-[#7C3AED] flex items-center justify-center mb-6 sm:mb-8 relative z-10 text-3xl font-extrabold text-[#7C3AED] shadow-lg shadow-[#7C3AED]/20">3</div>
+              <h3 className="font-display text-xl sm:text-2xl font-bold mb-4">Envoyez & Suivez</h3>
+              <p className="opacity-60 px-4 sm:px-6 text-sm">Exportez en format PDF officiel, encaissez les règlements et suivez l&apos;évolution de vos finances en temps réel.</p>
             </div>
           </div>
         </section>
@@ -514,9 +526,9 @@ export default function LandingPage() {
             <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-[#1E1B4B]">Ils nous font confiance</h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 reveal">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 reveal">
             {/* Testimonial 1 */}
-            <div className="p-8 rounded-[32px] bg-white border border-slate-100 flex flex-col justify-between floating-card">
+            <div className="p-6 sm:p-8 rounded-[32px] bg-white border border-slate-100 flex flex-col justify-between floating-card">
               <p className="text-slate-600 italic mb-8 text-sm leading-relaxed">
                 &quot;Depuis que j&apos;utilise zdmsFacture, mes clients à Abidjan me paient beaucoup plus rapidement. Mes factures font enfin pro.&quot;
               </p>
@@ -536,7 +548,7 @@ export default function LandingPage() {
             </div>
 
             {/* Testimonial 2 */}
-            <div className="p-8 rounded-[32px] bg-white border border-slate-100 flex flex-col justify-between floating-card">
+            <div className="p-6 sm:p-8 rounded-[32px] bg-white border border-slate-100 flex flex-col justify-between floating-card">
               <p className="text-slate-600 italic mb-8 text-sm leading-relaxed">
                 &quot;L&apos;automatisation du calcul de la TVA et de la double devise USD/CDF m&apos;a évité tellement d&apos;erreurs comptables. Un must-have en RDC.&quot;
               </p>
@@ -556,7 +568,7 @@ export default function LandingPage() {
             </div>
 
             {/* Testimonial 3 */}
-            <div className="p-8 rounded-[32px] bg-white border border-slate-100 flex flex-col justify-between floating-card">
+            <div className="p-6 sm:p-8 rounded-[32px] bg-white border border-slate-100 flex flex-col justify-between floating-card">
               <p className="text-slate-600 italic mb-8 text-sm leading-relaxed">
                 &quot;Interface magnifique, fluide et épurée. On sent que c&apos;est fait pour nous, entrepreneurs qui voulons aller vite au quotidien.&quot;
               </p>
@@ -576,7 +588,7 @@ export default function LandingPage() {
             </div>
 
             {/* Testimonial 4 */}
-            <div className="p-8 rounded-[32px] bg-white border border-slate-100 flex flex-col justify-between floating-card">
+            <div className="p-6 sm:p-8 rounded-[32px] bg-white border border-slate-100 flex flex-col justify-between floating-card">
               <p className="text-slate-600 italic mb-8 text-sm leading-relaxed">
                 &quot;Je gère mes clients à Kinshasa et mes encaissements de règlements sans stress. Le module de paiements mobiles est fantastique.&quot;
               </p>
@@ -598,16 +610,16 @@ export default function LandingPage() {
         </section>
 
         {/* Pricing Section */}
-        <section className="py-24 px-6 bg-slate-100/40 relative" id="tarifs">
+        <section className="py-20 sm:py-24 px-6 bg-slate-100/40 relative" id="tarifs">
           <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-20 reveal">
+            <div className="text-center mb-16 sm:mb-20 reveal">
               <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-[#1E1B4B]">Des tarifs transparents</h2>
-              <p className="text-slate-600 text-lg mt-4 max-w-lg mx-auto">Passez au niveau supérieur sans vous ruiner.</p>
+              <p className="text-slate-600 text-base sm:text-lg mt-4 max-w-lg mx-auto">Passez au niveau supérieur sans vous ruiner.</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch max-w-5xl mx-auto">
               {/* Card Basic */}
-              <div className="reveal p-8 rounded-[32px] bg-white border border-slate-100 flex flex-col justify-between floating-card">
+              <div className="reveal p-6 sm:p-8 rounded-[32px] bg-white border border-slate-100 flex flex-col justify-between floating-card">
                 <div>
                   <h3 className="font-display text-2xl font-bold mb-2 text-[#1E1B4B]">Gratuit</h3>
                   <p className="text-slate-400 text-sm mb-6">Pour démarrer en douceur</p>
@@ -636,7 +648,7 @@ export default function LandingPage() {
               </div>
 
               {/* Card Pro (Highlighted) */}
-              <div className="reveal delay-100 p-8 rounded-[32px] bg-[#1E1B4B] text-white flex flex-col justify-between relative overflow-hidden shadow-2xl scale-100 md:scale-105 z-10 border border-[#7C3AED]/20">
+              <div className="reveal delay-100 p-6 sm:p-8 rounded-[32px] bg-[#1E1B4B] text-white flex flex-col justify-between relative overflow-hidden shadow-2xl scale-100 md:scale-105 z-10 border border-[#7C3AED]/20">
                 <div className="absolute top-0 right-0 bg-[#7C3AED] text-white px-5 py-1.5 rounded-bl-2xl font-bold text-[10px] tracking-widest uppercase">
                   Recommandé
                 </div>
@@ -666,12 +678,12 @@ export default function LandingPage() {
                   onClick={() => router.push(user ? "/subscriptions" : "/login?mode=signup")}
                   className="w-full py-4 bg-[#7C3AED] text-white rounded-xl font-semibold text-sm hover:bg-[#6D28D9] transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-[#7C3AED]/20 cursor-pointer"
                 >
-                  {user ? "S'abonner" : "S'abonner maintenant"}
+                  {user ? "S&apos;abonner" : "S&apos;abonner maintenant"}
                 </button>
               </div>
 
               {/* Card Business */}
-              <div className="reveal delay-200 p-8 rounded-[32px] bg-white border border-slate-100 flex flex-col justify-between floating-card">
+              <div className="reveal delay-200 p-6 sm:p-8 rounded-[32px] bg-white border border-slate-100 flex flex-col justify-between floating-card">
                 <div>
                   <h3 className="font-display text-2xl font-bold mb-2 text-[#1E1B4B]">Business</h3>
                   <p className="text-slate-400 text-sm mb-6">Pour les agences et PME</p>
@@ -705,19 +717,14 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Final CTA Section */}
+        {/* Final CTA Section - dots pattern moved to CSS class 'cta-dots-pattern' */}
         <section className="py-24 px-6">
-          <div className="max-w-7xl mx-auto relative rounded-[48px] bg-[#7C3AED] overflow-hidden p-12 md:p-24 text-center shadow-2xl">
-            {/* Background pattern */}
-            <div className="absolute inset-0 opacity-10 pointer-events-none">
-              <div className="absolute top-0 left-0 w-full h-full" style={{ backgroundImage: 'radial-gradient(circle at 20% 50%, white 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
-            </div>
-            
+          <div className="max-w-7xl mx-auto relative rounded-[48px] bg-[#7C3AED] overflow-hidden p-8 sm:p-12 md:p-24 text-center shadow-2xl cta-dots-pattern">
             <div className="relative z-10 reveal">
               <h2 className="font-display text-white text-3xl sm:text-4xl md:text-5xl font-black mb-8 leading-tight max-w-3xl mx-auto">
                 Rejoignez les entrepreneurs qui facturent comme des pros
               </h2>
-              <p className="text-white/80 text-lg mb-12 max-w-2xl mx-auto leading-relaxed">
+              <p className="text-white/80 text-base sm:text-lg mb-12 max-w-2xl mx-auto leading-relaxed">
                 Prêt à moderniser la gestion financière de votre entreprise ? Commencez dès aujourd&apos;hui sans frais cachés et augmentez vos encaissements.
               </p>
               <button 
@@ -749,13 +756,13 @@ export default function LandingPage() {
               La plateforme SaaS de facturation préférée des entrepreneurs africains modernes.
             </p>
             <div className="flex gap-4">
-              <a href="#" className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-500 hover:bg-[#7C3AED] hover:text-white transition-all shadow-sm">
+              <a href="#" className="w-10 h-10 rounded-full bg-slate-55 flex items-center justify-center text-slate-500 hover:bg-[#7C3AED] hover:text-white transition-all shadow-sm">
                 <Globe className="w-5 h-5" />
               </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-500 hover:bg-[#7C3AED] hover:text-white transition-all shadow-sm">
+              <a href="#" className="w-10 h-10 rounded-full bg-slate-55 flex items-center justify-center text-slate-500 hover:bg-[#7C3AED] hover:text-white transition-all shadow-sm">
                 <Smartphone className="w-5 h-5" />
               </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-500 hover:bg-[#7C3AED] hover:text-white transition-all shadow-sm">
+              <a href="#" className="w-10 h-10 rounded-full bg-slate-55 flex items-center justify-center text-slate-500 hover:bg-[#7C3AED] hover:text-white transition-all shadow-sm">
                 <Mail className="w-5 h-5" />
               </a>
             </div>
@@ -805,7 +812,7 @@ export default function LandingPage() {
                 {newsletterStatus === 'loading' ? (
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                 ) : (
-                  "S'abonner"
+                  "S&apos;abonner"
                 )}
               </button>
             </form>

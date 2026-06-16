@@ -121,35 +121,3 @@ body {
   }
 }
 
-/* Landing Page Styles */
-.reveal {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: all 0.8s cubic-bezier(0.2, 1, 0.3, 1);
-}
-
-.reveal.active {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.floating-card {
-  box-shadow: 0 40px 80px -10px rgba(26, 26, 26, 0.04);
-  transition: transform 0.3s cubic-bezier(0.2, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.2, 1, 0.3, 1);
-}
-
-.floating-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 50px 100px -15px rgba(124, 58, 237, 0.08);
-}
-
-.gradient-mesh {
-  background-color: #f9f9ff;
-  background-image: radial-gradient(at 100% 0%, rgba(124, 58, 237, 0.06) 0px, transparent 50%),
-                    radial-gradient(at 0% 100%, rgba(124, 58, 237, 0.04) 0px, transparent 50%);
-}
-
-.magnetic-btn {
-  transition: transform 0.2s cubic-bezier(0.2, 1, 0.3, 1);
-}
-

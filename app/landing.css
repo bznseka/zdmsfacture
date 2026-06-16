@@ -1,0 +1,94 @@
+/* Dedicated stylesheet for zdmsFacture landing page */
+
+/* Scroll Reveal animation classes with smooth cubic-bezier transitions */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Floating Card style with premium shadow scaling on hover */
+.floating-card {
+  box-shadow: 0 20px 40px -15px rgba(30, 27, 75, 0.05);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease;
+}
+
+.floating-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 40px 80px -20px rgba(124, 58, 237, 0.14);
+  border-color: rgba(124, 58, 237, 0.25);
+}
+
+/* Gradient Mesh background with violet tone */
+.gradient-mesh {
+  background-color: #f9f9ff;
+  background-image: radial-gradient(at 100% 0%, rgba(124, 58, 237, 0.06) 0px, transparent 50%),
+                    radial-gradient(at 0% 100%, rgba(124, 58, 237, 0.04) 0px, transparent 50%);
+}
+
+/* Dot grid background patterns - replaces inline style gradients */
+.how-works-pattern {
+  background-image: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.12) 1.5px, transparent 1.5px);
+  background-size: 48px 48px;
+}
+
+.cta-dots-pattern {
+  background-image: radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.12) 1.5px, transparent 1.5px);
+  background-size: 32px 32px;
+}
+
+/* Header hover link underline slide animation */
+.nav-link-effect {
+  position: relative;
+}
+
+.nav-link-effect::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #7C3AED;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nav-link-effect:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* Logo animation on hover */
+.logo-animate:hover .logo-icon-wrapper {
+  transform: rotate(12deg) scale(1.05);
+  box-shadow: 0 10px 20px -5px rgba(124, 58, 237, 0.3);
+}
+
+.logo-icon-wrapper {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* CTA button subtle glow pulse animation */
+.cta-shadow-pulse {
+  box-shadow: 0 0 0 0 rgba(124, 58, 237, 0.4);
+  animation: cta-pulse 2.5s infinite;
+}
+
+@keyframes cta-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(124, 58, 237, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(124, 58, 237, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(124, 58, 237, 0);
+  }
+}
