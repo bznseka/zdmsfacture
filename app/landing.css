@@ -92,3 +92,23 @@
     box-shadow: 0 0 0 0 rgba(188, 0, 10, 0);
   }
 }
+
+/* Infinite horizontal scroll for company marquee */
+@keyframes marquee-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee-scroll 25s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}

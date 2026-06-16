@@ -24,13 +24,30 @@ import {
   Mail,
   Menu,
   X,
-  Sparkles
+  Sparkles,
+  Utensils,
+  ShoppingBag,
+  Cpu,
+  Zap,
+  Truck,
+  Layers,
+  Coins
 } from 'lucide-react';
 import './landing.css';
 
 export default function LandingPage() {
   const { user, authLoading } = useApp();
   const router = useRouter();
+
+  const companies = [
+    { name: 'Malewa Food', icon: <Utensils className="w-6 h-6 text-slate-500" /> },
+    { name: 'Kongo Mart', icon: <ShoppingBag className="w-6 h-6 text-slate-500" /> },
+    { name: 'Elikia Tech', icon: <Cpu className="w-6 h-6 text-slate-500" /> },
+    { name: 'Mwinda Energy', icon: <Zap className="w-6 h-6 text-slate-500" /> },
+    { name: 'Noki Noki Delivery', icon: <Truck className="w-6 h-6 text-slate-500" /> },
+    { name: 'Lualaba Mining Service', icon: <Layers className="w-6 h-6 text-slate-500" /> },
+    { name: 'Bana Express', icon: <Coins className="w-6 h-6 text-slate-500" /> },
+  ];
   
   // Mobile drawer state
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -120,7 +137,7 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="font-sans overflow-x-hidden bg-[#F9F9FC] text-[#151C27] min-h-screen">
+    <div className="font-sans overflow-x-clip bg-[#F9F9FC] text-[#151C27] min-h-screen">
       {/* Toast Notification */}
       {showToast && (
         <div className="fixed bottom-6 right-6 z-50 bg-[#bc000a] text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 animate-fade-in-up border border-[#ffdad5]/20">
@@ -360,6 +377,42 @@ export default function LandingPage() {
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Trusted By Marquee Section */}
+        <section className="py-12 bg-white border-y border-slate-100 overflow-hidden relative">
+          <div className="max-w-7xl mx-auto px-6 mb-6 text-center">
+            <p className="text-xs font-bold uppercase tracking-widest text-slate-400">
+              Ils nous font confiance pour leur facturation en RDC et en Afrique
+            </p>
+          </div>
+          
+          <div className="relative w-full overflow-hidden before:absolute before:left-0 before:top-0 before:bottom-0 before:w-24 before:bg-gradient-to-r before:from-white before:to-transparent before:z-10 after:absolute after:right-0 after:top-0 after:bottom-0 after:w-24 after:bg-gradient-to-l after:from-white after:to-transparent after:z-10">
+            <div className="animate-marquee flex gap-16 items-center py-2">
+              {/* First loop of logos */}
+              {companies.map((company, index) => (
+                <div key={`company-1-${index}`} className="flex items-center gap-3 grayscale opacity-40 hover:grayscale-0 hover:opacity-85 transition-all duration-300 px-4 group">
+                  <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100 group-hover:bg-landing-light group-hover:border-landing-primary/20 transition-all">
+                    {company.icon}
+                  </div>
+                  <span className="font-display font-extrabold text-sm text-slate-600 group-hover:text-[#151C27] tracking-tight whitespace-nowrap transition-colors">
+                    {company.name}
+                  </span>
+                </div>
+              ))}
+              {/* Second loop of logos (duplicate for seamless loop) */}
+              {companies.map((company, index) => (
+                <div key={`company-2-${index}`} className="flex items-center gap-3 grayscale opacity-40 hover:grayscale-0 hover:opacity-85 transition-all duration-300 px-4 group">
+                  <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100 group-hover:bg-landing-light group-hover:border-landing-primary/20 transition-all">
+                    {company.icon}
+                  </div>
+                  <span className="font-display font-extrabold text-sm text-slate-600 group-hover:text-[#151C27] tracking-tight whitespace-nowrap transition-colors">
+                    {company.name}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
         </section>
