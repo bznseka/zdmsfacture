@@ -10,6 +10,7 @@ const config: Config = {
     extend: {
       fontFamily: {
         sans: ["var(--font-inter)", "sans-serif"],
+        display: ["var(--font-plus-jakarta-sans)", "sans-serif"],
       },
       colors: {
         background: "var(--background)",
