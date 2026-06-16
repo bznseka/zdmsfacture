@@ -98,7 +98,7 @@ export default function LandingPage() {
     }
   };
 
-  // Newsletter submission handler
+  // Newsletter subscription handler
   const handleNewsletterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newsletterEmail) return;
@@ -120,10 +120,10 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="font-sans overflow-x-hidden bg-[#F9F9FC] text-[#1E1B4B] min-h-screen">
+    <div className="font-sans overflow-x-hidden bg-[#F9F9FC] text-[#151C27] min-h-screen">
       {/* Toast Notification */}
       {showToast && (
-        <div className="fixed bottom-6 right-6 z-50 bg-[#7C3AED] text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 animate-fade-in-up border border-[#EDE9FE]/20">
+        <div className="fixed bottom-6 right-6 z-50 bg-[#bc000a] text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 animate-fade-in-up border border-[#ffdad5]/20">
           <Sparkles className="w-5 h-5 text-amber-300 animate-pulse" />
           <span className="text-sm font-semibold">{toastMessage}</span>
           <button 
@@ -144,39 +144,39 @@ export default function LandingPage() {
         <nav className="flex justify-between items-center px-6 max-w-7xl mx-auto">
           {/* Logo with rotation and elevation hover micro-animation */}
           <Link href={user ? "/overview" : "/"} className="flex items-center gap-2 group logo-animate">
-            <div className="w-10 h-10 rounded-xl bg-[#7C3AED] flex items-center justify-center shadow-md shadow-[#7C3AED]/25 logo-icon-wrapper">
+            <div className="w-10 h-10 rounded-xl bg-landing-primary flex items-center justify-center shadow-md shadow-landing-primary/25 logo-icon-wrapper">
               <FileText className="w-6 h-6 text-white logo-icon" />
             </div>
-            <span className="font-display text-2xl font-black tracking-tight text-[#1E1B4B]">
-              zdms<span className="text-[#7C3AED]">Facture</span>
+            <span className="font-display text-2xl font-black tracking-tight text-[#151C27]">
+              zdms<span className="text-landing-primary">Facture</span>
             </span>
           </Link>
 
           {/* Desktop Navigation Links - slide line animation nav-link-effect */}
           <div className="hidden md:flex items-center gap-8">
             <a 
-              className="text-slate-600 hover:text-[#7C3AED] transition-colors duration-300 font-semibold text-sm nav-link-effect" 
+              className="text-slate-600 hover:text-landing-primary transition-colors duration-300 font-semibold text-sm nav-link-effect" 
               href="#solution"
               onClick={(e) => handleScrollToSection(e, 'solution')}
             >
               Solution
             </a>
             <a 
-              className="text-slate-600 hover:text-[#7C3AED] transition-colors duration-300 font-semibold text-sm nav-link-effect" 
+              className="text-slate-600 hover:text-landing-primary transition-colors duration-300 font-semibold text-sm nav-link-effect" 
               href="#tarifs"
               onClick={(e) => handleScrollToSection(e, 'tarifs')}
             >
               Tarifs
             </a>
             <a 
-              className="text-slate-600 hover:text-[#7C3AED] transition-colors duration-300 font-semibold text-sm nav-link-effect" 
+              className="text-slate-600 hover:text-landing-primary transition-colors duration-300 font-semibold text-sm nav-link-effect" 
               href="#temoignages"
               onClick={(e) => handleScrollToSection(e, 'temoignages')}
             >
               Témoignages
             </a>
             <a 
-              className="text-slate-600 hover:text-[#7C3AED] transition-colors duration-300 font-semibold text-sm nav-link-effect" 
+              className="text-slate-600 hover:text-landing-primary transition-colors duration-300 font-semibold text-sm nav-link-effect" 
               href="#footer"
               onClick={(e) => handleScrollToSection(e, 'footer')}
             >
@@ -187,11 +187,11 @@ export default function LandingPage() {
           {/* Auth Action Buttons */}
           <div className="hidden sm:flex items-center gap-4">
             {authLoading ? (
-              <div className="w-8 h-8 border-2 border-[#7C3AED] border-t-transparent rounded-full animate-spin"></div>
+              <div className="w-8 h-8 border-2 border-landing-primary border-t-transparent rounded-full animate-spin"></div>
             ) : user ? (
               <Link 
                 href="/overview"
-                className="bg-[#7C3AED] text-white px-6 py-2.5 rounded-xl font-semibold text-sm hover:bg-[#6D28D9] transition-colors shadow-lg shadow-[#7C3AED]/15"
+                className="bg-landing-primary text-white px-6 py-2.5 rounded-xl font-semibold text-sm hover:bg-landing-hover transition-colors shadow-lg shadow-landing-primary/15"
               >
                 Tableau de Bord
               </Link>
@@ -199,15 +199,15 @@ export default function LandingPage() {
               <>
                 <Link 
                   href="/login"
-                  className="text-slate-600 font-semibold text-sm hover:text-[#7C3AED] transition-colors px-4 py-2 nav-link-effect"
+                  className="text-slate-600 font-semibold text-sm hover:text-landing-primary transition-colors px-4 py-2 nav-link-effect"
                 >
                   Connexion
                 </Link>
                 <Link 
                   href="/login?mode=signup"
-                  className="bg-[#7C3AED] text-white px-6 py-2.5 rounded-xl font-semibold text-sm hover:bg-[#6D28D9] transition-all hover:scale-105 active:scale-95 shadow-lg shadow-[#7C3AED]/15 cta-shadow-pulse"
+                  className="bg-landing-primary text-white px-6 py-2.5 rounded-xl font-semibold text-sm hover:bg-landing-hover transition-all hover:scale-105 active:scale-95 shadow-lg shadow-landing-primary/15 cta-shadow-pulse"
                 >
-                  Créer un compte
+                  Sign up
                 </Link>
               </>
             )}
@@ -216,7 +216,7 @@ export default function LandingPage() {
           {/* Mobile Menu Button */}
           <button 
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 text-slate-700 hover:text-[#7C3AED] transition-colors"
+            className="md:hidden p-2 text-slate-700 hover:text-landing-primary transition-colors"
           >
             {mobileMenuOpen ? <X className="w-6 h-6 animate-scale-in" /> : <Menu className="w-6 h-6 animate-scale-in" />}
           </button>
@@ -227,28 +227,28 @@ export default function LandingPage() {
           <div className="md:hidden border-t border-slate-100 bg-white/95 backdrop-blur-md px-6 py-6 absolute top-full left-0 w-full shadow-xl animate-fade-in-up">
             <div className="flex flex-col gap-5">
               <a 
-                className="text-slate-700 hover:text-[#7C3AED] transition-colors font-semibold py-2 border-b border-slate-50" 
+                className="text-slate-700 hover:text-landing-primary transition-colors font-semibold py-2 border-b border-slate-50" 
                 href="#solution"
                 onClick={(e) => handleScrollToSection(e, 'solution')}
               >
                 Solution
               </a>
               <a 
-                className="text-slate-700 hover:text-[#7C3AED] transition-colors font-semibold py-2 border-b border-slate-50" 
+                className="text-slate-700 hover:text-landing-primary transition-colors font-semibold py-2 border-b border-slate-50" 
                 href="#tarifs"
                 onClick={(e) => handleScrollToSection(e, 'tarifs')}
               >
                 Tarifs
               </a>
               <a 
-                className="text-slate-700 hover:text-[#7C3AED] transition-colors font-semibold py-2 border-b border-slate-50" 
+                className="text-slate-700 hover:text-landing-primary transition-colors font-semibold py-2 border-b border-slate-50" 
                 href="#temoignages"
                 onClick={(e) => handleScrollToSection(e, 'temoignages')}
               >
                 Témoignages
               </a>
               <a 
-                className="text-slate-700 hover:text-[#7C3AED] transition-colors font-semibold py-2 border-b border-slate-50" 
+                className="text-slate-700 hover:text-landing-primary transition-colors font-semibold py-2 border-b border-slate-50" 
                 href="#footer"
                 onClick={(e) => handleScrollToSection(e, 'footer')}
               >
@@ -260,7 +260,7 @@ export default function LandingPage() {
                   <Link 
                     href="/overview"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="w-full text-center bg-[#7C3AED] text-white py-3 rounded-xl font-semibold hover:bg-[#6D28D9] transition-colors"
+                    className="w-full text-center bg-landing-primary text-white py-3 rounded-xl font-semibold hover:bg-landing-hover transition-colors"
                   >
                     Tableau de Bord
                   </Link>
@@ -276,7 +276,7 @@ export default function LandingPage() {
                     <Link 
                       href="/login?mode=signup"
                       onClick={() => setMobileMenuOpen(false)}
-                      className="w-full text-center bg-[#7C3AED] text-white py-3 rounded-xl font-semibold hover:bg-[#6D28D9] transition-colors"
+                      className="w-full text-center bg-landing-primary text-white py-3 rounded-xl font-semibold hover:bg-landing-hover transition-colors"
                     >
                       Créer un compte
                     </Link>
@@ -292,11 +292,11 @@ export default function LandingPage() {
         {/* Hero Section */}
         <section className="relative pt-12 md:pt-20 pb-24 md:pb-32 px-6 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           <div className="reveal active flex flex-col items-start text-left">
-            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#7C3AED]/10 text-[#7C3AED] font-semibold text-xs tracking-wider uppercase mb-6 animate-pulse">
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-landing-light text-landing-primary font-semibold text-xs tracking-wider uppercase mb-6 animate-pulse">
               <Sparkles className="w-4 h-4 animate-spin" style={{ animationDuration: '6s' }} /> Faites-vous payer immédiatement
             </span>
-            <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl mb-6 leading-[1.1] font-black text-[#1E1B4B] tracking-tight">
-              Fini les factures sur <span className="text-[#7C3AED] relative inline-block">Word <span className="absolute bottom-1 left-0 w-full h-[6px] bg-[#7C3AED]/15 rounded-full"></span></span> et <span className="text-[#7C3AED] relative inline-block">Excel <span className="absolute bottom-1 left-0 w-full h-[6px] bg-[#7C3AED]/15 rounded-full"></span></span>
+            <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl mb-6 leading-[1.1] font-black text-[#151C27] tracking-tight">
+              Fini les factures sur <span className="text-landing-primary relative inline-block">Word <span className="absolute bottom-1 left-0 w-full h-[6px] bg-landing-primary/15 rounded-full"></span></span> et <span className="text-landing-primary relative inline-block">Excel <span className="absolute bottom-1 left-0 w-full h-[6px] bg-landing-primary/15 rounded-full"></span></span>
             </h1>
             <p className="text-base sm:text-lg text-slate-600 mb-10 max-w-lg leading-relaxed">
               Le SaaS de facturation simple, fluide et moderne conçu spécifiquement pour les entrepreneurs et entreprises d&apos;Afrique en quête de professionnalisme.
@@ -307,7 +307,7 @@ export default function LandingPage() {
                 onMouseMove={handleMouseMove}
                 onMouseLeave={handleMouseLeave}
                 onClick={() => router.push(user ? "/overview" : "/login?mode=signup")}
-                className="magnetic-btn bg-[#1E1B4B] text-white px-8 py-4 rounded-xl font-semibold flex items-center justify-center gap-2 group shadow-xl hover:bg-slate-900 transition-all cursor-pointer w-full sm:w-auto cta-shadow-pulse"
+                className="magnetic-btn bg-landing-dark text-white px-8 py-4 rounded-xl font-semibold flex items-center justify-center gap-2 group shadow-xl hover:bg-slate-900 transition-all cursor-pointer w-full sm:w-auto"
               >
                 {user ? "Accéder au Tableau de Bord" : "Commencer gratuitement"}
                 <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
@@ -316,7 +316,7 @@ export default function LandingPage() {
                 onMouseMove={handleMouseMove}
                 onMouseLeave={handleMouseLeave}
                 onClick={() => router.push(user ? "/overview" : "/login")}
-                className="magnetic-btn border-[1.5px] border-slate-200 text-[#1E1B4B] px-8 py-4 rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-[#7C3AED]/5 hover:border-[#7C3AED]/30 transition-colors cursor-pointer w-full sm:w-auto"
+                className="magnetic-btn border-[1.5px] border-slate-200 text-[#151C27] px-8 py-4 rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-landing-light hover:border-landing-primary/30 transition-colors cursor-pointer w-full sm:w-auto"
               >
                 Voir la démo
                 <Play className="w-5 h-5" />
@@ -344,19 +344,19 @@ export default function LandingPage() {
             </div>
 
             {/* Glowing Orbs */}
-            <div className="absolute -top-12 -right-8 w-32 sm:w-48 h-32 sm:h-48 bg-[#7C3AED]/5 rounded-full blur-3xl"></div>
-            <div className="absolute -bottom-12 -left-8 w-48 sm:w-64 h-48 sm:h-64 bg-[#7C3AED]/8 rounded-full blur-[90px]"></div>
+            <div className="absolute -top-12 -right-8 w-32 sm:w-48 h-32 sm:h-48 bg-landing-primary/5 rounded-full blur-3xl"></div>
+            <div className="absolute -bottom-12 -left-8 w-48 sm:w-64 h-48 sm:h-64 bg-landing-primary/8 rounded-full blur-[90px]"></div>
             
             {/* Floating Widget - hidden on small screens */}
             <div className="absolute top-1/2 -right-6 transform -translate-y-1/2 hidden md:block z-20">
               <div className="bg-white p-5 rounded-2xl shadow-2xl border border-slate-100 flex flex-col gap-1.5 transition-transform hover:scale-105">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-600">
+                  <div className="w-10 h-10 rounded-full bg-landing-light flex items-center justify-center text-landing-primary">
                     <CheckCircle2 className="w-6 h-6" />
                   </div>
                   <div>
                     <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Paiement reçu</p>
-                    <p className="font-display font-black text-emerald-600 text-lg">+150 000 CDF</p>
+                    <p className="font-display font-black text-landing-primary text-lg">+150 000 CDF</p>
                   </div>
                 </div>
               </div>
@@ -368,8 +368,8 @@ export default function LandingPage() {
         <section className="py-20 sm:py-24 px-6 bg-slate-100/40">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-16 sm:mb-20 reveal">
-              <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold mb-6 text-[#1E1B4B]">
-                Pourquoi choisir <span className="text-[#7C3AED]">zdmsFacture</span> ?
+              <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold mb-6 text-[#151C27]">
+                Pourquoi choisir <span className="text-landing-primary">zdmsFacture</span> ?
               </h2>
               <p className="text-slate-600 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
                 L&apos;époque des factures Word mal alignées et des erreurs de calcul est révolue. Passez à la vitesse supérieure.
@@ -379,10 +379,10 @@ export default function LandingPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {/* Problem 1 */}
               <div className="reveal p-6 sm:p-8 rounded-[32px] bg-white border border-slate-100 floating-card flex flex-col items-start">
-                <div className="w-14 h-14 bg-red-500/10 text-red-600 rounded-2xl flex items-center justify-center mb-6 sm:mb-8">
+                <div className="w-14 h-14 bg-landing-light text-landing-primary rounded-2xl flex items-center justify-center mb-6 sm:mb-8">
                   <Ban className="w-8 h-8" />
                 </div>
-                <h3 className="font-display text-xl sm:text-2xl font-bold mb-4 text-[#1E1B4B]">Factures &quot;Amateur&quot;</h3>
+                <h3 className="font-display text-xl sm:text-2xl font-bold mb-4 text-[#151C27]">Factures &quot;Amateur&quot;</h3>
                 <p className="text-slate-600 leading-relaxed text-sm">
                   Arrêtez d&apos;envoyer des fichiers Word pixelisés ou décalés. Votre image de marque mérite une présentation A4 impeccable qui inspire confiance instantanément.
                 </p>
@@ -390,10 +390,10 @@ export default function LandingPage() {
 
               {/* Problem 2 */}
               <div className="reveal delay-100 p-6 sm:p-8 rounded-[32px] bg-white border border-slate-100 floating-card flex flex-col items-start">
-                <div className="w-14 h-14 bg-[#7C3AED]/10 text-[#7C3AED] rounded-2xl flex items-center justify-center mb-6 sm:mb-8">
+                <div className="w-14 h-14 bg-landing-light text-landing-primary rounded-2xl flex items-center justify-center mb-6 sm:mb-8">
                   <Calculator className="w-8 h-8" />
                 </div>
-                <h3 className="font-display text-xl sm:text-2xl font-bold mb-4 text-[#1E1B4B]">Erreurs de TVA</h3>
+                <h3 className="font-display text-xl sm:text-2xl font-bold mb-4 text-[#151C27]">Erreurs de TVA</h3>
                 <p className="text-slate-600 leading-relaxed text-sm">
                   Les calculs manuels de la TVA fiscale de 18% (ou autres taxes) sont des sources d&apos;erreurs coûteuses. Automatisez vos sous-totaux et taxes instantanément.
                 </p>
@@ -401,10 +401,10 @@ export default function LandingPage() {
 
               {/* Problem 3 */}
               <div className="reveal delay-200 p-6 sm:p-8 rounded-[32px] bg-white border border-slate-100 floating-card flex flex-col items-start">
-                <div className="w-14 h-14 bg-amber-500/10 text-amber-600 rounded-2xl flex items-center justify-center mb-6 sm:mb-8">
+                <div className="w-14 h-14 bg-landing-light text-landing-primary rounded-2xl flex items-center justify-center mb-6 sm:mb-8">
                   <Clock className="w-8 h-8" />
                 </div>
-                <h3 className="font-display text-xl sm:text-2xl font-bold mb-4 text-[#1E1B4B]">Impayés Invisibles</h3>
+                <h3 className="font-display text-xl sm:text-2xl font-bold mb-4 text-[#151C27]">Impayés Invisibles</h3>
                 <p className="text-slate-600 leading-relaxed text-sm">
                   Difficile de savoir qui vous doit quoi avec un simple fichier Excel. Suivez chaque créance, identifiez les retards et agissez rapidement.
                 </p>
@@ -416,13 +416,13 @@ export default function LandingPage() {
         {/* Features Bento Grid Section */}
         <section className="py-20 sm:py-24 px-6 max-w-7xl mx-auto" id="solution">
           <div className="text-center mb-16 sm:mb-20 reveal">
-            <span className="text-[#7C3AED] font-semibold tracking-wider text-xs uppercase mb-4 block">Fonctionnalités</span>
-            <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-[#1E1B4B]">Tout ce dont vous avez besoin</h2>
+            <span className="text-landing-primary font-semibold tracking-wider text-xs uppercase mb-4 block">Fonctionnalités</span>
+            <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-[#151C27]">Tout ce dont vous avez besoin</h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-6 reveal">
             {/* Bento Card 1 (Large - spans 2 cols & 2 rows on medium+) */}
-            <div className="md:col-span-2 md:row-span-2 p-8 sm:p-12 rounded-[40px] bg-[#1E1B4B] text-white overflow-hidden relative group flex flex-col justify-between min-h-[380px] hover:shadow-2xl transition-all duration-300">
+            <div className="md:col-span-2 md:row-span-2 p-8 sm:p-12 rounded-[40px] bg-landing-dark text-white overflow-hidden relative group flex flex-col justify-between min-h-[380px] hover:shadow-2xl transition-all duration-300">
               <div className="relative z-10">
                 <h3 className="font-display text-2xl sm:text-3xl font-extrabold mb-6 leading-tight">Factures professionnelles en 2 clics</h3>
                 <p className="opacity-75 text-base sm:text-lg mb-8 leading-relaxed">
@@ -432,7 +432,7 @@ export default function LandingPage() {
               <div className="mt-auto relative z-10">
                 <button 
                   onClick={() => router.push(user ? "/invoices/new" : "/login?mode=signup")}
-                  className="inline-flex items-center gap-2 font-semibold text-sm text-white hover:text-[#7C3AED] transition-colors group-hover:gap-4 cursor-pointer"
+                  className="inline-flex items-center gap-2 font-semibold text-sm text-white hover:text-landing-primary transition-colors group-hover:gap-4 cursor-pointer"
                 >
                   Découvrir l&apos;éditeur <ArrowRight className="w-5 h-5" />
                 </button>
@@ -446,11 +446,11 @@ export default function LandingPage() {
 
             {/* Bento Card 2 (Spans 2 columns on medium+) */}
             <div className="md:col-span-2 p-8 sm:p-10 rounded-[40px] bg-[#EDE9FE]/50 border border-[#EDE9FE] flex flex-col sm:flex-row gap-6 floating-card">
-              <div className="w-12 h-12 bg-[#7C3AED]/10 text-[#7C3AED] rounded-2xl flex items-center justify-center shrink-0">
+              <div className="w-12 h-12 bg-landing-light text-landing-primary rounded-2xl flex items-center justify-center shrink-0">
                 <Percent className="w-6 h-6" />
               </div>
               <div>
-                <h3 className="font-display text-xl sm:text-2xl font-bold mb-3 text-[#1E1B4B]">TVA & Double Devise fluides</h3>
+                <h3 className="font-display text-xl sm:text-2xl font-bold mb-3 text-[#151C27]">TVA & Double Devise fluides</h3>
                 <p className="text-slate-600 text-sm leading-relaxed">
                   Configurez vos taux de taxe et convertissez automatiquement vos montants de Dollars (USD) en Francs Congolais (CDF) selon le taux de change en direct.
                 </p>
@@ -459,24 +459,24 @@ export default function LandingPage() {
 
             {/* Bento Card 3 (1 column) */}
             <div className="p-8 sm:p-10 rounded-[40px] bg-white border border-slate-100 flex flex-col gap-6 floating-card">
-              <div className="w-12 h-12 bg-emerald-500/10 text-emerald-600 rounded-2xl flex items-center justify-center shrink-0">
+              <div className="w-12 h-12 bg-landing-light text-landing-primary rounded-2xl flex items-center justify-center shrink-0">
                 <TrendingUp className="w-6 h-6" />
               </div>
               <div>
-                <h3 className="font-display text-lg sm:text-xl font-bold mb-3 text-[#1E1B4B]">Suivi temps réel</h3>
+                <h3 className="font-display text-lg sm:text-xl font-bold mb-3 text-[#151C27]">Suivi temps réel</h3>
                 <p className="text-slate-600 text-xs leading-relaxed">
                   Graphiques interactifs de revenus, indicateurs de croissance mensuels et de recouvrement sur votre Dashboard.
                 </p>
               </div>
             </div>
 
-            {/* Bento Card 4 (1 column - Primary Accent) */}
-            <div className="p-8 sm:p-10 rounded-[40px] bg-[#7C3AED] text-white flex flex-col gap-6 floating-card">
+            {/* Bento Card 4 (1 column - Red Accent as in screenshot) */}
+            <div className="p-8 sm:p-10 rounded-[40px] bg-landing-primary text-white flex flex-col gap-6 floating-card">
               <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center shrink-0">
                 <Users className="w-6 h-6" />
               </div>
               <div>
-                <h3 className="font-display text-lg sm:text-xl font-bold mb-3 text-white">Clients & Paiements</h3>
+                <h3 className="font-display text-lg sm:text-xl font-bold mb-3 text-white">CRM Intégré</h3>
                 <p className="text-white/80 text-xs leading-relaxed">
                   Gerez votre base de clients, enregistrez les règlements Mobile Money (M-Pesa, Orange, Airtel) ou Cash en un seul point.
                 </p>
@@ -485,8 +485,8 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* How It Works Section - dots pattern moved to CSS class 'how-works-pattern' */}
-        <section className="py-24 px-6 bg-[#1E1B4B] text-white relative overflow-hidden how-works-pattern">
+        {/* How It Works Section */}
+        <section className="py-24 px-6 bg-landing-dark text-white relative overflow-hidden how-works-pattern">
           <div className="max-w-7xl mx-auto text-center mb-20 sm:mb-24 reveal">
             <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-black text-white">Comment ça marche ?</h2>
             <p className="opacity-60 text-base sm:text-lg mt-4 max-w-lg mx-auto">Plus simple que d&apos;envoyer un paiement Mobile Money.</p>
@@ -494,25 +494,25 @@ export default function LandingPage() {
 
           <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-16 relative">
             {/* Steps connection line */}
-            <div className="hidden md:block absolute top-12 left-1/6 right-1/6 h-[1.5px] bg-[#7C3AED]/35"></div>
+            <div className="hidden md:block absolute top-12 left-1/6 right-1/6 h-[1.5px] bg-landing-primary/35"></div>
 
             {/* Step 1 */}
             <div className="flex flex-col items-center text-center reveal">
-              <div className="w-24 h-24 rounded-full bg-[#7C3AED]/10 border-2 border-[#7C3AED] flex items-center justify-center mb-6 sm:mb-8 relative z-10 text-3xl font-extrabold text-[#7C3AED] shadow-lg shadow-[#7C3AED]/20">1</div>
+              <div className="w-24 h-24 rounded-full bg-landing-light border-2 border-landing-primary flex items-center justify-center mb-6 sm:mb-8 relative z-10 text-3xl font-extrabold text-landing-primary shadow-lg shadow-landing-primary/20">1</div>
               <h3 className="font-display text-xl sm:text-2xl font-bold mb-4">Créez votre compte</h3>
               <p className="opacity-60 px-4 sm:px-6 text-sm">Inscription rapide en 30 secondes avec votre email. Sans carte bancaire.</p>
             </div>
 
             {/* Step 2 */}
             <div className="flex flex-col items-center text-center reveal delay-100">
-              <div className="w-24 h-24 rounded-full bg-[#7C3AED]/10 border-2 border-[#7C3AED] flex items-center justify-center mb-6 sm:mb-8 relative z-10 text-3xl font-extrabold text-[#7C3AED] shadow-lg shadow-[#7C3AED]/20">2</div>
+              <div className="w-24 h-24 rounded-full bg-landing-light border-2 border-landing-primary flex items-center justify-center mb-6 sm:mb-8 relative z-10 text-3xl font-extrabold text-landing-primary shadow-lg shadow-landing-primary/20">2</div>
               <h3 className="font-display text-xl sm:text-2xl font-bold mb-4">Configurez & Créez</h3>
               <p className="opacity-60 px-4 sm:px-6 text-sm">Définissez vos informations d&apos;entreprise, ajoutez vos clients et générez votre première facture.</p>
             </div>
 
             {/* Step 3 */}
             <div className="flex flex-col items-center text-center reveal delay-200">
-              <div className="w-24 h-24 rounded-full bg-[#7C3AED]/10 border-2 border-[#7C3AED] flex items-center justify-center mb-6 sm:mb-8 relative z-10 text-3xl font-extrabold text-[#7C3AED] shadow-lg shadow-[#7C3AED]/20">3</div>
+              <div className="w-24 h-24 rounded-full bg-landing-light border-2 border-landing-primary flex items-center justify-center mb-6 sm:mb-8 relative z-10 text-3xl font-extrabold text-landing-primary shadow-lg shadow-landing-primary/20">3</div>
               <h3 className="font-display text-xl sm:text-2xl font-bold mb-4">Envoyez & Suivez</h3>
               <p className="opacity-60 px-4 sm:px-6 text-sm">Exportez en format PDF officiel, encaissez les règlements et suivez l&apos;évolution de vos finances en temps réel.</p>
             </div>
@@ -522,8 +522,8 @@ export default function LandingPage() {
         {/* Testimonials Section */}
         <section className="py-24 px-6 max-w-7xl mx-auto overflow-hidden" id="temoignages">
           <div className="mb-16 reveal">
-            <span className="text-[#7C3AED] font-semibold tracking-wider text-xs uppercase mb-4 block">Témoignages</span>
-            <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-[#1E1B4B]">Ils nous font confiance</h2>
+            <span className="text-landing-primary font-semibold tracking-wider text-xs uppercase mb-4 block">Témoignages</span>
+            <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-[#151C27]">Ils nous font confiance</h2>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 reveal">
@@ -533,7 +533,7 @@ export default function LandingPage() {
                 &quot;Depuis que j&apos;utilise zdmsFacture, mes clients à Abidjan me paient beaucoup plus rapidement. Mes factures font enfin pro.&quot;
               </p>
               <div className="flex items-center gap-4 border-t border-slate-50 pt-4">
-                <div className="w-12 h-12 rounded-full overflow-hidden shrink-0 border-2 border-[#7C3AED]/10">
+                <div className="w-12 h-12 rounded-full overflow-hidden shrink-0 border-2 border-landing-primary/15">
                   <img 
                     alt="Koffi" 
                     className="w-full h-full object-cover" 
@@ -541,7 +541,7 @@ export default function LandingPage() {
                   />
                 </div>
                 <div>
-                  <p className="font-bold text-[#1E1B4B] text-sm">Koffi</p>
+                  <p className="font-bold text-[#151C27] text-sm">Koffi</p>
                   <p className="text-xs text-slate-500">Abidjan, CIV</p>
                 </div>
               </div>
@@ -553,7 +553,7 @@ export default function LandingPage() {
                 &quot;L&apos;automatisation du calcul de la TVA et de la double devise USD/CDF m&apos;a évité tellement d&apos;erreurs comptables. Un must-have en RDC.&quot;
               </p>
               <div className="flex items-center gap-4 border-t border-slate-50 pt-4">
-                <div className="w-12 h-12 rounded-full overflow-hidden shrink-0 border-2 border-[#7C3AED]/10">
+                <div className="w-12 h-12 rounded-full overflow-hidden shrink-0 border-2 border-landing-primary/15">
                   <img 
                     alt="Amadou" 
                     className="w-full h-full object-cover" 
@@ -561,7 +561,7 @@ export default function LandingPage() {
                   />
                 </div>
                 <div>
-                  <p className="font-bold text-[#1E1B4B] text-sm">Amadou</p>
+                  <p className="font-bold text-[#151C27] text-sm">Amadou</p>
                   <p className="text-xs text-slate-500">Douala, CMR</p>
                 </div>
               </div>
@@ -573,7 +573,7 @@ export default function LandingPage() {
                 &quot;Interface magnifique, fluide et épurée. On sent que c&apos;est fait pour nous, entrepreneurs qui voulons aller vite au quotidien.&quot;
               </p>
               <div className="flex items-center gap-4 border-t border-slate-50 pt-4">
-                <div className="w-12 h-12 rounded-full overflow-hidden shrink-0 border-2 border-[#7C3AED]/10">
+                <div className="w-12 h-12 rounded-full overflow-hidden shrink-0 border-2 border-landing-primary/15">
                   <img 
                     alt="Mireille" 
                     className="w-full h-full object-cover" 
@@ -581,7 +581,7 @@ export default function LandingPage() {
                   />
                 </div>
                 <div>
-                  <p className="font-bold text-[#1E1B4B] text-sm">Mireille</p>
+                  <p className="font-bold text-[#151C27] text-sm">Mireille</p>
                   <p className="text-xs text-slate-500">Libreville, GAB</p>
                 </div>
               </div>
@@ -593,7 +593,7 @@ export default function LandingPage() {
                 &quot;Je gère mes clients à Kinshasa et mes encaissements de règlements sans stress. Le module de paiements mobiles est fantastique.&quot;
               </p>
               <div className="flex items-center gap-4 border-t border-slate-50 pt-4">
-                <div className="w-12 h-12 rounded-full overflow-hidden shrink-0 border-2 border-[#7C3AED]/10">
+                <div className="w-12 h-12 rounded-full overflow-hidden shrink-0 border-2 border-landing-primary/15">
                   <img 
                     alt="Jean-Paul" 
                     className="w-full h-full object-cover" 
@@ -601,7 +601,7 @@ export default function LandingPage() {
                   />
                 </div>
                 <div>
-                  <p className="font-bold text-[#1E1B4B] text-sm">Jean-Paul</p>
+                  <p className="font-bold text-[#151C27] text-sm">Jean-Paul</p>
                   <p className="text-xs text-slate-500">Kinshasa, DRC</p>
                 </div>
               </div>
@@ -613,7 +613,7 @@ export default function LandingPage() {
         <section className="py-20 sm:py-24 px-6 bg-slate-100/40 relative" id="tarifs">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-16 sm:mb-20 reveal">
-              <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-[#1E1B4B]">Des tarifs transparents</h2>
+              <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-[#151C27]">Des tarifs transparents</h2>
               <p className="text-slate-600 text-base sm:text-lg mt-4 max-w-lg mx-auto">Passez au niveau supérieur sans vous ruiner.</p>
             </div>
 
@@ -621,62 +621,62 @@ export default function LandingPage() {
               {/* Card Basic */}
               <div className="reveal p-6 sm:p-8 rounded-[32px] bg-white border border-slate-100 flex flex-col justify-between floating-card">
                 <div>
-                  <h3 className="font-display text-2xl font-bold mb-2 text-[#1E1B4B]">Gratuit</h3>
+                  <h3 className="font-display text-2xl font-bold mb-2 text-[#151C27]">Gratuit</h3>
                   <p className="text-slate-400 text-sm mb-6">Pour démarrer en douceur</p>
                   <div className="mb-8 flex items-baseline gap-1">
-                    <span className="text-4xl font-extrabold text-[#1E1B4B]">0 USD</span>
+                    <span className="text-4xl font-extrabold text-[#151C27]">0 USD</span>
                     <span className="text-slate-500 text-sm">/mois</span>
                   </div>
                   <ul className="flex flex-col gap-4 mb-8">
                     <li className="flex items-center gap-3 text-slate-600 text-sm">
-                      <CheckCircle2 className="w-4 h-4 text-[#7C3AED]" /> 5 factures & devis par mois
+                      <CheckCircle2 className="w-4 h-4 text-landing-primary" /> 5 factures & devis par mois
                     </li>
                     <li className="flex items-center gap-3 text-slate-600 text-sm">
-                      <CheckCircle2 className="w-4 h-4 text-[#7C3AED]" /> 1 utilisateur unique
+                      <CheckCircle2 className="w-4 h-4 text-landing-primary" /> 1 utilisateur unique
                     </li>
                     <li className="flex items-center gap-3 text-slate-600 text-sm">
-                      <CheckCircle2 className="w-4 h-4 text-[#7C3AED]" /> Modèle standard de factures
+                      <CheckCircle2 className="w-4 h-4 text-landing-primary" /> Modèle standard de factures
                     </li>
                   </ul>
                 </div>
                 <button 
                   onClick={() => router.push(user ? "/subscriptions" : "/login?mode=signup")}
-                  className="w-full py-4 border border-slate-200 rounded-xl font-semibold text-sm hover:bg-[#7C3AED]/5 hover:border-[#7C3AED]/30 text-[#1E1B4B] transition-colors cursor-pointer"
+                  className="w-full py-4 border border-slate-200 rounded-xl font-semibold text-sm hover:bg-landing-light hover:border-landing-primary/30 text-[#151C27] transition-colors cursor-pointer"
                 >
                   {user ? "Vérifier mon plan" : "Choisir ce plan"}
                 </button>
               </div>
 
-              {/* Card Pro (Highlighted) */}
-              <div className="reveal delay-100 p-6 sm:p-8 rounded-[32px] bg-[#1E1B4B] text-white flex flex-col justify-between relative overflow-hidden shadow-2xl scale-100 md:scale-105 z-10 border border-[#7C3AED]/20">
-                <div className="absolute top-0 right-0 bg-[#7C3AED] text-white px-5 py-1.5 rounded-bl-2xl font-bold text-[10px] tracking-widest uppercase">
+              {/* Card Pro (Highlighted - Dark Navy with Red highlights in screenshot) */}
+              <div className="reveal delay-100 p-6 sm:p-8 rounded-[32px] bg-landing-dark text-white flex flex-col justify-between relative overflow-hidden shadow-2xl scale-100 md:scale-105 z-10 border border-landing-primary/30">
+                <div className="absolute top-0 right-0 bg-landing-primary text-white px-5 py-1.5 rounded-bl-2xl font-bold text-[10px] tracking-widest uppercase">
                   Recommandé
                 </div>
                 <div>
                   <h3 className="font-display text-2xl font-bold mb-2">Pro</h3>
                   <p className="opacity-60 text-sm mb-6">Pour les entrepreneurs actifs</p>
                   <div className="mb-8 flex items-baseline gap-1">
-                    <span className="text-4xl font-extrabold text-[#7C3AED]">15 USD</span>
+                    <span className="text-4xl font-extrabold text-landing-accent">15 USD</span>
                     <span className="opacity-60 text-sm">/mois</span>
                   </div>
                   <ul className="flex flex-col gap-4 mb-8">
                     <li className="flex items-center gap-3 text-sm">
-                      <CheckCircle2 className="w-4 h-4 text-[#7C3AED]" /> Factures & devis illimités
+                      <CheckCircle2 className="w-4 h-4 text-landing-primary" /> Factures & devis illimités
                     </li>
                     <li className="flex items-center gap-3 text-sm">
-                      <CheckCircle2 className="w-4 h-4 text-[#7C3AED]" /> Branding personnalisé (Logo, etc.)
+                      <CheckCircle2 className="w-4 h-4 text-landing-primary" /> Branding personnalisé (Logo, etc.)
                     </li>
                     <li className="flex items-center gap-3 text-sm">
-                      <CheckCircle2 className="w-4 h-4 text-[#7C3AED]" /> Double devise & Taux automatique
+                      <CheckCircle2 className="w-4 h-4 text-landing-primary" /> Double devise & Taux automatique
                     </li>
                     <li className="flex items-center gap-3 text-sm">
-                      <CheckCircle2 className="w-4 h-4 text-[#7C3AED]" /> Support client prioritaire 24/7
+                      <CheckCircle2 className="w-4 h-4 text-landing-primary" /> Support client prioritaire 24/7
                     </li>
                   </ul>
                 </div>
                 <button 
                   onClick={() => router.push(user ? "/subscriptions" : "/login?mode=signup")}
-                  className="w-full py-4 bg-[#7C3AED] text-white rounded-xl font-semibold text-sm hover:bg-[#6D28D9] transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-[#7C3AED]/20 cursor-pointer"
+                  className="w-full py-4 bg-landing-primary text-white rounded-xl font-semibold text-sm hover:bg-landing-hover transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-landing-primary/20 cursor-pointer"
                 >
                   {user ? "S&apos;abonner" : "S&apos;abonner maintenant"}
                 </button>
@@ -685,30 +685,30 @@ export default function LandingPage() {
               {/* Card Business */}
               <div className="reveal delay-200 p-6 sm:p-8 rounded-[32px] bg-white border border-slate-100 flex flex-col justify-between floating-card">
                 <div>
-                  <h3 className="font-display text-2xl font-bold mb-2 text-[#1E1B4B]">Business</h3>
+                  <h3 className="font-display text-2xl font-bold mb-2 text-[#151C27]">Business</h3>
                   <p className="text-slate-400 text-sm mb-6">Pour les agences et PME</p>
                   <div className="mb-8 flex items-baseline gap-1">
-                    <span className="text-4xl font-extrabold text-[#1E1B4B]">35 USD</span>
+                    <span className="text-4xl font-extrabold text-[#151C27]">35 USD</span>
                     <span className="text-slate-500 text-sm">/mois</span>
                   </div>
                   <ul className="flex flex-col gap-4 mb-8">
                     <li className="flex items-center gap-3 text-slate-600 text-sm">
-                      <CheckCircle2 className="w-4 h-4 text-[#7C3AED]" /> Tout en illimité
+                      <CheckCircle2 className="w-4 h-4 text-landing-primary" /> Tout en illimité
                     </li>
                     <li className="flex items-center gap-3 text-slate-600 text-sm">
-                      <CheckCircle2 className="w-4 h-4 text-[#7C3AED]" /> Multi-utilisateurs (jusqu&apos;à 5 accès)
+                      <CheckCircle2 className="w-4 h-4 text-landing-primary" /> Multi-utilisateurs (jusqu&apos;à 5 accès)
                     </li>
                     <li className="flex items-center gap-3 text-slate-600 text-sm">
-                      <CheckCircle2 className="w-4 h-4 text-[#7C3AED]" /> Accès comptable dédié
+                      <CheckCircle2 className="w-4 h-4 text-landing-primary" /> Accès comptable dédié
                     </li>
                     <li className="flex items-center gap-3 text-slate-600 text-sm">
-                      <CheckCircle2 className="w-4 h-4 text-[#7C3AED]" /> Intégration API personnalisée
+                      <CheckCircle2 className="w-4 h-4 text-landing-primary" /> Intégration API personnalisée
                     </li>
                   </ul>
                 </div>
                 <button 
                   onClick={() => router.push(user ? "/subscriptions" : "/login?mode=signup")}
-                  className="w-full py-4 border border-slate-200 rounded-xl font-semibold text-sm hover:bg-[#7C3AED]/5 hover:border-[#7C3AED]/30 text-[#1E1B4B] transition-colors cursor-pointer"
+                  className="w-full py-4 border border-slate-200 rounded-xl font-semibold text-sm hover:bg-landing-light hover:border-landing-primary/30 text-[#151C27] transition-colors cursor-pointer"
                 >
                   {user ? "Négocier" : "Passer en Business"}
                 </button>
@@ -717,9 +717,9 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Final CTA Section - dots pattern moved to CSS class 'cta-dots-pattern' */}
+        {/* Final CTA Section */}
         <section className="py-24 px-6">
-          <div className="max-w-7xl mx-auto relative rounded-[48px] bg-[#7C3AED] overflow-hidden p-8 sm:p-12 md:p-24 text-center shadow-2xl cta-dots-pattern">
+          <div className="max-w-7xl mx-auto relative rounded-[48px] bg-landing-primary overflow-hidden p-8 sm:p-12 md:p-24 text-center shadow-2xl cta-dots-pattern">
             <div className="relative z-10 reveal">
               <h2 className="font-display text-white text-3xl sm:text-4xl md:text-5xl font-black mb-8 leading-tight max-w-3xl mx-auto">
                 Rejoignez les entrepreneurs qui facturent comme des pros
@@ -729,7 +729,7 @@ export default function LandingPage() {
               </p>
               <button 
                 onClick={() => router.push(user ? "/overview" : "/login?mode=signup")}
-                className="bg-white text-[#7C3AED] px-10 py-5 rounded-2xl font-bold text-lg hover:scale-105 active:scale-95 transition-all shadow-2xl inline-flex items-center gap-3 cursor-pointer"
+                className="bg-white text-landing-primary px-10 py-5 rounded-2xl font-bold text-lg hover:scale-105 active:scale-95 transition-all shadow-2xl inline-flex items-center gap-3 cursor-pointer"
               >
                 {user ? "Accéder à mon espace" : "Commencer gratuitement"}
                 <Rocket className="w-6 h-6" />
@@ -745,24 +745,24 @@ export default function LandingPage() {
           {/* Brand Column */}
           <div className="flex flex-col gap-6">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-[#7C3AED] flex items-center justify-center text-white">
+              <div className="w-8 h-8 rounded-lg bg-landing-primary flex items-center justify-center text-white">
                 <FileText className="w-5 h-5" />
               </div>
-              <span className="font-display font-black text-2xl text-[#1E1B4B]">
-                zdms<span className="text-[#7C3AED]">Facture</span>
+              <span className="font-display font-black text-2xl text-[#151C27]">
+                zdms<span className="text-landing-primary">Facture</span>
               </span>
             </div>
             <p className="text-slate-600 text-sm leading-relaxed">
               La plateforme SaaS de facturation préférée des entrepreneurs africains modernes.
             </p>
             <div className="flex gap-4">
-              <a href="#" className="w-10 h-10 rounded-full bg-slate-55 flex items-center justify-center text-slate-500 hover:bg-[#7C3AED] hover:text-white transition-all shadow-sm">
+              <a href="#" className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-500 hover:bg-landing-primary hover:text-white transition-all shadow-sm">
                 <Globe className="w-5 h-5" />
               </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-slate-55 flex items-center justify-center text-slate-500 hover:bg-[#7C3AED] hover:text-white transition-all shadow-sm">
+              <a href="#" className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-500 hover:bg-landing-primary hover:text-white transition-all shadow-sm">
                 <Smartphone className="w-5 h-5" />
               </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-slate-55 flex items-center justify-center text-slate-500 hover:bg-[#7C3AED] hover:text-white transition-all shadow-sm">
+              <a href="#" className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-500 hover:bg-landing-primary hover:text-white transition-all shadow-sm">
                 <Mail className="w-5 h-5" />
               </a>
             </div>
@@ -770,33 +770,33 @@ export default function LandingPage() {
 
           {/* Links Col 1 */}
           <div>
-            <h4 className="font-display font-bold text-sm text-[#1E1B4B] mb-6 tracking-wide uppercase">Produit</h4>
+            <h4 className="font-display font-bold text-sm text-[#151C27] mb-6 tracking-wide uppercase">Produit</h4>
             <ul className="flex flex-col gap-4 text-sm text-slate-600">
-              <li><a className="hover:text-[#7C3AED] transition-colors" href="#solution" onClick={(e) => handleScrollToSection(e, 'solution')}>Solution</a></li>
-              <li><a className="hover:text-[#7C3AED] transition-colors" href="#tarifs" onClick={(e) => handleScrollToSection(e, 'tarifs')}>Tarifs</a></li>
-              <li><a className="hover:text-[#7C3AED] transition-colors" href="#temoignages" onClick={(e) => handleScrollToSection(e, 'temoignages')}>Témoignages</a></li>
+              <li><a className="hover:text-landing-primary transition-colors" href="#solution" onClick={(e) => handleScrollToSection(e, 'solution')}>Solution</a></li>
+              <li><a className="hover:text-landing-primary transition-colors" href="#tarifs" onClick={(e) => handleScrollToSection(e, 'tarifs')}>Tarifs</a></li>
+              <li><a className="hover:text-landing-primary transition-colors" href="#temoignages" onClick={(e) => handleScrollToSection(e, 'temoignages')}>Témoignages</a></li>
             </ul>
           </div>
 
           {/* Links Col 2 */}
           <div>
-            <h4 className="font-display font-bold text-sm text-[#1E1B4B] mb-6 tracking-wide uppercase">Entreprise</h4>
+            <h4 className="font-display font-bold text-sm text-[#151C27] mb-6 tracking-wide uppercase">Entreprise</h4>
             <ul className="flex flex-col gap-4 text-sm text-slate-600">
-              <li><Link className="hover:text-[#7C3AED] transition-colors" href="/login">Créer un compte</Link></li>
-              <li><a className="hover:text-[#7C3AED] transition-colors" href="mailto:contact@bruno.cd">Support technique</a></li>
-              <li><a className="hover:text-[#7C3AED] transition-colors" href="#">Politique de Confidentialité</a></li>
+              <li><Link className="hover:text-landing-primary transition-colors" href="/login">Créer un compte</Link></li>
+              <li><a className="hover:text-landing-primary transition-colors" href="mailto:contact@bruno.cd">Support technique</a></li>
+              <li><a className="hover:text-landing-primary transition-colors" href="#">Politique de Confidentialité</a></li>
             </ul>
           </div>
 
           {/* Newsletter Column */}
           <div>
-            <h4 className="font-display font-bold text-sm text-[#1E1B4B] mb-6 tracking-wide uppercase">Newsletter</h4>
+            <h4 className="font-display font-bold text-sm text-[#151C27] mb-6 tracking-wide uppercase">Newsletter</h4>
             <p className="text-xs text-slate-500 mb-4 leading-relaxed">
               Recevez nos conseils de facturation et astuces fiscales pour vos activités.
             </p>
             <form onSubmit={handleNewsletterSubmit} className="flex flex-col gap-3">
               <input 
-                className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#7C3AED] focus:border-transparent focus:bg-white outline-none transition-all placeholder-slate-400" 
+                className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-landing-primary focus:border-transparent focus:bg-white outline-none transition-all placeholder-slate-400" 
                 placeholder="Votre adresse email" 
                 type="email"
                 required
@@ -807,7 +807,7 @@ export default function LandingPage() {
               <button 
                 type="submit"
                 disabled={newsletterStatus === 'loading'}
-                className="bg-[#1E1B4B] text-white py-3 rounded-xl font-semibold text-sm hover:bg-slate-900 transition-colors flex items-center justify-center gap-2"
+                className="bg-landing-dark text-white py-3 rounded-xl font-semibold text-sm hover:bg-slate-900 transition-colors flex items-center justify-center gap-2"
               >
                 {newsletterStatus === 'loading' ? (
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -823,8 +823,8 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-6 mt-16 pt-8 border-t border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4 text-slate-500 text-xs font-semibold">
           <p>© 2026 zdmsFacture. Fait avec fierté en République Démocratique du Congo.</p>
           <div className="flex gap-8">
-            <a href="#" className="hover:text-[#7C3AED] transition-colors">CGU</a>
-            <a href="#" className="hover:text-[#7C3AED] transition-colors">Politique de Cookies</a>
+            <a href="#" className="hover:text-landing-primary transition-colors">CGU</a>
+            <a href="#" className="hover:text-landing-primary transition-colors">Politique de Cookies</a>
           </div>
         </div>
       </footer>

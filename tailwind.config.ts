@@ -20,6 +20,16 @@ const config: Config = {
           hover: "#6D28D9",
           light: "#EDE9FE",
         },
+        landing: {
+          primary: "#bc000a",
+          hover: "#930005",
+          dark: "#151c27",
+          light: "rgba(188, 0, 10, 0.1)",
+          cardBg: "#f9f9ff",
+          border: "#e7bdb7",
+          accent: "#ffdad5",
+          accentDim: "#ffb4aa",
+        },
         sidebar: {
           bg: "#FFFFFF",
           text: "#4B5563",
