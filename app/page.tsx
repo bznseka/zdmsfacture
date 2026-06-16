@@ -731,7 +731,7 @@ export default function LandingPage() {
                   onClick={() => router.push(user ? "/subscriptions" : "/login?mode=signup")}
                   className="w-full py-4 bg-landing-primary text-white rounded-xl font-semibold text-sm hover:bg-landing-hover transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-landing-primary/20 cursor-pointer"
                 >
-                  {user ? "S&apos;abonner" : "S&apos;abonner maintenant"}
+                  {user ? "S'abonner" : "S'abonner maintenant"}
                 </button>
               </div>
 
@@ -865,7 +865,7 @@ export default function LandingPage() {
                 {newsletterStatus === 'loading' ? (
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                 ) : (
-                  "S&apos;abonner"
+                  "S'abonner"
                 )}
               </button>
             </form>
