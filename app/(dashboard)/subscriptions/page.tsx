@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Check, Sparkles, Zap, Building } from 'lucide-react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Check, Sparkles, Zap, Building, Loader2, X, Phone, CheckCircle, AlertCircle } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
 
 interface Plan {
   id: string;
@@ -14,71 +15,216 @@ interface Plan {
   popular?: boolean;
 }
 
+interface ActiveSubscription {
+  plan_id: string;
+  billing_period: 'monthly' | 'yearly';
+  expires_at: string;
+}
+
+type ModalState = 'closed' | 'form' | 'waiting' | 'success' | 'error';
+
+const plans: Plan[] = [
+  {
+    id: 'plan-starter',
+    name: 'Starter',
+    priceMonthly: 15,
+    priceYearly: 12,
+    icon: Zap,
+    gradient: 'from-blue-500 to-indigo-600',
+    features: [
+      "Jusqu'à 15 factures par mois",
+      'Gestion de 50 clients',
+      'Double devise USD & Franc Congolais',
+      '1 utilisateur unique',
+      'Support email standard',
+    ],
+  },
+  {
+    id: 'plan-pro',
+    name: 'Pro',
+    priceMonthly: 35,
+    priceYearly: 28,
+    icon: Sparkles,
+    gradient: 'from-primary to-purple-600',
+    popular: true,
+    features: [
+      'Factures & Devis illimités',
+      'Nombre de clients illimité',
+      'Double devise USD & CDF',
+      "Jusqu'à 5 utilisateurs collaborateurs",
+      'Rapports statistiques avancés',
+      'Génération PDF de marque blanche',
+      'Support prioritaire 24/7',
+    ],
+  },
+  {
+    id: 'plan-business',
+    name: 'Business',
+    priceMonthly: 79,
+    priceYearly: 63,
+    icon: Building,
+    gradient: 'from-teal-400 to-emerald-600',
+    features: [
+      'Toutes les fonctionnalités Pro',
+      "Nombre d'utilisateurs illimité",
+      'Rapprochement bancaire automatique',
+      'Intégration API de facturation',
+      'Gestionnaire de compte dédié',
+      'SLA garanti de 99.9%',
+    ],
+  },
+];
+
 export default function SubscriptionsPage() {
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
-  const [activePlanId, setActivePlanId] = useState<string>('plan-pro'); // Default to Pro
+  const [subscription, setSubscription] = useState<ActiveSubscription | null>(null);
+  const [user, setUser] = useState<{ id: string; email: string; name: string } | null>(null);
 
-  const plans: Plan[] = [
-    {
-      id: 'plan-starter',
-      name: 'Starter',
-      priceMonthly: 15,
-      priceYearly: 12, // $12/month billed yearly
-      icon: Zap,
-      gradient: 'from-blue-500 to-indigo-600',
-      features: [
-        'Jusqu’à 15 factures par mois',
-        'Gestion de 50 clients',
-        'Double devise USD & Franc Congolais',
-        '1 utilisateur unique',
-        'Support email standard',
-      ]
-    },
-    {
-      id: 'plan-pro',
-      name: 'Pro',
-      priceMonthly: 35,
-      priceYearly: 28,
-      icon: Sparkles,
-      gradient: 'from-primary to-purple-600',
-      popular: true,
-      features: [
-        'Factures & Devis illimités',
-        'Nombre de clients illimité',
-        'Double devise USD & CDF',
-        'Jusqu’à 5 utilisateurs collaborateurs',
-        'Rapports statistiques avancés',
-        'Génération PDF de marque blanche',
-        'Support prioritaire 24/7',
-      ]
-    },
-    {
-      id: 'plan-business',
-      name: 'Business',
-      priceMonthly: 79,
-      priceYearly: 63,
-      icon: Building,
-      gradient: 'from-teal-400 to-emerald-600',
-      features: [
-        'Toutes les fonctionnalités Pro',
-        'Nombre d’utilisateurs illimité',
-        'Rapprochement bancaire automatique',
-        'Intégration API de facturation',
-        'Gestionnaire de compte dédié',
-        'SLA garanti de 99.9%',
-      ]
-    }
-  ];
+  // État du modal de paiement
+  const [modalState, setModalState] = useState<ModalState>('closed');
+  const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
+  const [capturedBilling, setCapturedBilling] = useState<'monthly' | 'yearly'>('monthly');
+  const [phone, setPhone] = useState('');
+  const [network, setNetwork] = useState<'airtel' | 'orange'>('airtel');
+  const [depositId, setDepositId] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const handleUpgrade = (planId: string, planName: string) => {
-    setActivePlanId(planId);
-    alert(`Votre abonnement a été mis à jour vers le forfait ${planName} (${
-      billingPeriod === 'monthly' ? 'Paiement mensuel' : 'Facturation annuelle'
-    }) !`);
+  const fetchSubscription = useCallback(async (userId: string) => {
+    const { data } = await supabase
+      .from('subscriptions')
+      .select('plan_id, billing_period, expires_at')
+      .eq('user_id', userId)
+      .eq('status', 'active')
+      .gte('expires_at', new Date().toISOString())
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (data) setSubscription(data as ActiveSubscription);
+  }, []);
+
+  useEffect(() => {
+    const init = async () => {
+      const { data: { user: u } } = await supabase.auth.getUser();
+      if (!u) return;
+      setUser({ id: u.id, email: u.email || '', name: u.user_metadata?.full_name || u.email || '' });
+      await fetchSubscription(u.id);
+    };
+    init();
+  }, [fetchSubscription]);
+
+  // Arrêter le polling au démontage
+  useEffect(() => () => { if (pollRef.current) clearInterval(pollRef.current); }, []);
+
+  const stopPolling = () => { if (pollRef.current) { clearInterval(pollRef.current); pollRef.current = null; } };
+
+  const closeModal = () => {
+    stopPolling();
+    setModalState('closed');
+    setDepositId(null);
+    setErrorMsg(null);
+    setPhone('');
   };
+
+  const openModal = (plan: Plan) => {
+    setSelectedPlan(plan);
+    setCapturedBilling(billingPeriod);
+    setPhone('');
+    setNetwork('airtel');
+    setErrorMsg(null);
+    setModalState('form');
+  };
+
+  const startPolling = useCallback(
+    (depId: string, plan: Plan, billing: 'monthly' | 'yearly', userId: string, amount: number) => {
+      let attempts = 0;
+      pollRef.current = setInterval(async () => {
+        attempts++;
+
+        if (attempts > 72) { // 6 minutes max
+          stopPolling();
+          setModalState('error');
+          setErrorMsg('Délai dépassé. Vérifiez votre téléphone puis contactez le support si le montant a été débité.');
+          return;
+        }
+
+        try {
+          const res = await fetch(`/api/payment/status/${depId}`);
+          const { status } = await res.json();
+
+          if (status === 'COMPLETED') {
+            stopPolling();
+            const r = await fetch('/api/payment/activate', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ depositId: depId, plan_id: plan.id, billing_period: billing, user_id: userId, amount }),
+            });
+            if (r.ok) {
+              setModalState('success');
+              await fetchSubscription(userId);
+            } else {
+              setModalState('error');
+              setErrorMsg("Paiement reçu mais erreur d'activation. Contactez le support.");
+            }
+          } else if (status === 'FAILED' || status === 'EXPIRED') {
+            stopPolling();
+            setModalState('error');
+            setErrorMsg('Paiement refusé ou expiré. Veuillez réessayer.');
+          }
+        } catch { /* erreur réseau temporaire, on réessaie */ }
+      }, 5000);
+    },
+    [fetchSubscription]
+  );
+
+  const handleSubmit = async () => {
+    if (!user || !selectedPlan || !phone.trim()) return;
+    setIsSubmitting(true);
+    setErrorMsg(null);
+
+    const amount = capturedBilling === 'monthly' ? selectedPlan.priceMonthly : selectedPlan.priceYearly * 12;
+
+    try {
+      const res = await fetch('/api/payment/initiate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          phone: phone.trim(),
+          network,
+          amount,
+          plan_id: selectedPlan.id,
+          billing_period: capturedBilling,
+          user_id: user.id,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setErrorMsg(data.error || "Erreur lors de l'initiation du paiement");
+        setIsSubmitting(false);
+        return;
+      }
+
+      setDepositId(data.depositId);
+      setModalState('waiting');
+      startPolling(data.depositId, selectedPlan, capturedBilling, user.id, amount);
+    } catch {
+      setErrorMsg('Erreur réseau. Vérifiez votre connexion et réessayez.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const activePlanId = subscription?.plan_id ?? null;
+
+  // ── Calcul du label réseau ───────────────────────────────────────────────
+  const networkLabel = network === 'airtel' ? 'Airtel Money' : 'Orange Money';
 
   return (
     <div className="space-y-8 animate-scale-in opacity-0 [animation-fill-mode:forwards]">
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 animate-fade-in-up opacity-0 [animation-fill-mode:forwards] [animation-delay:100ms]">
         <div>
@@ -90,7 +236,6 @@ export default function SubscriptionsPage() {
           </p>
         </div>
 
-        {/* Toggle Switch */}
         <div className="flex items-center gap-2 bg-slate-100 p-1 rounded-xl self-start sm:self-auto border border-slate-200/40">
           <button
             onClick={() => setBillingPeriod('monthly')}
@@ -107,64 +252,51 @@ export default function SubscriptionsPage() {
             }`}
           >
             <span>Annuel</span>
-            <span className="bg-primary-light text-primary text-[9px] font-bold px-1.5 py-0.5 rounded-md">
-              -20%
-            </span>
+            <span className="bg-primary-light text-primary text-[9px] font-bold px-1.5 py-0.5 rounded-md">-20%</span>
           </button>
         </div>
       </div>
 
-      {/* Pricing Cards Grid */}
+      {/* Grille des forfaits */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch animate-fade-in-up opacity-0 [animation-fill-mode:forwards] [animation-delay:200ms]">
         {plans.map((plan) => {
           const Icon = plan.icon;
           const isCurrent = plan.id === activePlanId;
-          const monthlyPrice = billingPeriod === 'monthly' ? plan.priceMonthly : plan.priceYearly;
-          const formattedAnnual = billingPeriod === 'yearly' ? `(soit $${monthlyPrice * 12} facturés par an)` : '';
+          const displayPrice = billingPeriod === 'monthly' ? plan.priceMonthly : plan.priceYearly;
+          const annualNote = billingPeriod === 'yearly' ? `(soit $${displayPrice * 12} facturés par an)` : '';
 
           return (
             <div
               key={plan.id}
-              className={`
-                bg-white p-8 rounded-2xl border flex flex-col justify-between relative hover-card-effect shadow-sm
-                ${plan.popular ? 'border-primary ring-2 ring-primary/10 shadow-lg' : 'border-slate-100'}
-              `}
+              className={`bg-white p-8 rounded-2xl border flex flex-col justify-between relative hover-card-effect shadow-sm
+                ${plan.popular ? 'border-primary ring-2 ring-primary/10 shadow-lg' : 'border-slate-100'}`}
             >
-              {/* Popular Badge */}
               {plan.popular && (
                 <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-primary to-purple-600 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-md">
                   Recommandé
                 </span>
               )}
 
-              {/* Top details */}
               <div className="space-y-6">
                 <div className="flex items-center gap-3">
                   <div className={`p-2.5 rounded-xl bg-gradient-to-br ${plan.gradient} text-white shadow-md`}>
                     <Icon className="w-5 h-5" />
                   </div>
-                  <h3 className="text-base font-extrabold text-slate-800 uppercase tracking-wide">
-                    {plan.name}
-                  </h3>
+                  <h3 className="text-base font-extrabold text-slate-800 uppercase tracking-wide">{plan.name}</h3>
                 </div>
 
-                {/* Price Display */}
                 <div>
                   <div className="flex items-baseline gap-1">
-                    <span className="text-4xl font-black text-slate-900 tracking-tight">${monthlyPrice}</span>
+                    <span className="text-4xl font-black text-slate-900 tracking-tight">${displayPrice}</span>
                     <span className="text-sm font-semibold text-slate-400">/ mois</span>
                   </div>
-                  {formattedAnnual && (
-                    <span className="text-[10px] font-bold text-slate-400 block mt-1">
-                      {formattedAnnual}
-                    </span>
+                  {annualNote && (
+                    <span className="text-[10px] font-bold text-slate-400 block mt-1">{annualNote}</span>
                   )}
                 </div>
 
-                {/* Divider */}
                 <div className="h-[1px] bg-slate-100 w-full" />
 
-                {/* Features List */}
                 <ul className="space-y-3.5 text-xs font-semibold text-slate-600">
                   {plan.features.map((feature, idx) => (
                     <li key={idx} className="flex items-start gap-2.5">
@@ -175,27 +307,22 @@ export default function SubscriptionsPage() {
                 </ul>
               </div>
 
-              {/* Upgrade Button */}
               <div className="mt-8">
                 {isCurrent ? (
-                  <button
-                    disabled
-                    className="w-full h-12 text-sm font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-xl flex items-center justify-center gap-2"
-                  >
+                  <button disabled className="w-full h-12 text-sm font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-xl flex items-center justify-center gap-2">
+                    <Check className="w-4 h-4" />
                     <span>Forfait actuel</span>
                   </button>
                 ) : (
                   <button
-                    onClick={() => handleUpgrade(plan.id, plan.name)}
-                    className={`
-                      w-full h-12 text-sm font-bold rounded-xl transition-all duration-200 hover:scale-[1.01]
+                    onClick={() => openModal(plan)}
+                    className={`w-full h-12 text-sm font-bold rounded-xl transition-all duration-200 hover:scale-[1.01] flex items-center justify-center gap-2
                       ${plan.popular
                         ? 'text-white bg-primary hover:bg-primary-hover shadow-lg shadow-primary/20'
                         : 'text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200'
-                      }
-                    `}
+                      }`}
                   >
-                    <span>Choisir {plan.name}</span>
+                    Choisir {plan.name}
                   </button>
                 )}
               </div>
@@ -203,6 +330,190 @@ export default function SubscriptionsPage() {
           );
         })}
       </div>
+
+      <p className="text-center text-xs text-slate-400 font-medium animate-fade-in-up opacity-0 [animation-fill-mode:forwards] [animation-delay:300ms]">
+        Paiement sécurisé via Mobile Money · Airtel Money &amp; Orange Money · RDC
+      </p>
+
+      {/* ── Modal de paiement ─────────────────────────────────────────────── */}
+      {modalState !== 'closed' && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+
+            {/* En-tête du modal */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+              <div>
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Paiement Mobile Money</p>
+                {selectedPlan && (
+                  <p className="text-base font-extrabold text-slate-900 mt-0.5">
+                    Forfait {selectedPlan.name} —{' '}
+                    <span className="text-primary">
+                      ${capturedBilling === 'monthly' ? selectedPlan.priceMonthly : selectedPlan.priceYearly * 12} USD
+                    </span>
+                    {capturedBilling === 'yearly' && <span className="text-xs text-slate-400 font-semibold"> / an</span>}
+                  </p>
+                )}
+              </div>
+              <button
+                onClick={closeModal}
+                className="p-2 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="px-6 py-5">
+
+              {/* ── Formulaire ── */}
+              {modalState === 'form' && (
+                <div className="space-y-5">
+                  {/* Sélection du réseau */}
+                  <div>
+                    <label className="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-wide">
+                      Choisissez votre réseau
+                    </label>
+                    <div className="grid grid-cols-2 gap-3">
+                      {(['airtel', 'orange'] as const).map((net) => (
+                        <button
+                          key={net}
+                          onClick={() => setNetwork(net)}
+                          className={`py-3 px-4 rounded-xl border-2 text-sm font-bold transition-all duration-150 flex flex-col items-center gap-1
+                            ${network === net
+                              ? net === 'airtel'
+                                ? 'border-red-500 bg-red-50 text-red-700'
+                                : 'border-orange-500 bg-orange-50 text-orange-700'
+                              : 'border-slate-200 text-slate-500 hover:border-slate-300'
+                            }`}
+                        >
+                          <span className="text-xl">{net === 'airtel' ? '🔴' : '🟠'}</span>
+                          <span>{net === 'airtel' ? 'Airtel Money' : 'Orange Money'}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Numéro de téléphone */}
+                  <div>
+                    <label className="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-wide">
+                      Numéro {networkLabel}
+                    </label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm select-none">
+                        +243
+                      </span>
+                      <input
+                        type="tel"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        placeholder="812 345 678"
+                        className="w-full pl-14 pr-4 h-12 rounded-xl border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none text-sm font-semibold text-slate-800 placeholder:text-slate-300 transition-all"
+                      />
+                      <Phone className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
+                    </div>
+                    <p className="text-[11px] text-slate-400 mt-1.5 font-medium">
+                      Vous recevrez une invite USSD pour confirmer le paiement
+                    </p>
+                  </div>
+
+                  {errorMsg && (
+                    <div className="flex items-start gap-2 bg-red-50 border border-red-100 rounded-xl p-3 text-xs font-semibold text-red-700">
+                      <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                      {errorMsg}
+                    </div>
+                  )}
+
+                  <button
+                    onClick={handleSubmit}
+                    disabled={isSubmitting || !phone.trim()}
+                    className="w-full h-12 bg-primary text-white text-sm font-bold rounded-xl hover:bg-primary-hover transition-all duration-200
+                      disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-primary/20"
+                  >
+                    {isSubmitting ? (
+                      <><Loader2 className="w-4 h-4 animate-spin" /> Connexion en cours…</>
+                    ) : (
+                      `Payer avec ${networkLabel}`
+                    )}
+                  </button>
+                </div>
+              )}
+
+              {/* ── Attente d'approbation ── */}
+              {modalState === 'waiting' && (
+                <div className="flex flex-col items-center gap-5 py-4 text-center">
+                  <div className="relative">
+                    <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+                      <Phone className="w-7 h-7 text-primary" />
+                    </div>
+                    <span className="absolute -top-1 -right-1 flex h-5 w-5">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-60" />
+                      <span className="relative inline-flex h-5 w-5 rounded-full bg-primary" />
+                    </span>
+                  </div>
+                  <div>
+                    <p className="text-base font-extrabold text-slate-900">En attente de confirmation</p>
+                    <p className="text-sm text-slate-500 font-medium mt-1">
+                      Vérifiez votre téléphone <span className="font-bold text-slate-700">(+243 {phone})</span>
+                      <br />et approuvez le paiement via l&apos;invite USSD {networkLabel}.
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-slate-400 font-semibold">
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    Vérification automatique toutes les 5 secondes…
+                  </div>
+                </div>
+              )}
+
+              {/* ── Succès ── */}
+              {modalState === 'success' && (
+                <div className="flex flex-col items-center gap-5 py-4 text-center">
+                  <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center">
+                    <CheckCircle className="w-8 h-8 text-emerald-600" />
+                  </div>
+                  <div>
+                    <p className="text-base font-extrabold text-slate-900">Abonnement activé !</p>
+                    <p className="text-sm text-slate-500 font-medium mt-1">
+                      Votre forfait <span className="font-bold text-slate-700">{selectedPlan?.name}</span> est maintenant actif.
+                    </p>
+                  </div>
+                  <button
+                    onClick={closeModal}
+                    className="w-full h-12 bg-emerald-600 text-white text-sm font-bold rounded-xl hover:bg-emerald-700 transition-colors"
+                  >
+                    Fermer
+                  </button>
+                </div>
+              )}
+
+              {/* ── Erreur ── */}
+              {modalState === 'error' && (
+                <div className="flex flex-col items-center gap-5 py-4 text-center">
+                  <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center">
+                    <AlertCircle className="w-8 h-8 text-red-600" />
+                  </div>
+                  <div>
+                    <p className="text-base font-extrabold text-slate-900">Paiement échoué</p>
+                    <p className="text-sm text-slate-500 font-medium mt-1">{errorMsg}</p>
+                  </div>
+                  <div className="flex gap-3 w-full">
+                    <button
+                      onClick={() => { setModalState('form'); setErrorMsg(null); }}
+                      className="flex-1 h-12 bg-primary text-white text-sm font-bold rounded-xl hover:bg-primary-hover transition-colors"
+                    >
+                      Réessayer
+                    </button>
+                    <button
+                      onClick={closeModal}
+                      className="flex-1 h-12 bg-slate-100 text-slate-700 text-sm font-bold rounded-xl hover:bg-slate-200 transition-colors"
+                    >
+                      Annuler
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
