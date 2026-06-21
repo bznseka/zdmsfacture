@@ -13,7 +13,7 @@ interface InvoiceFormProps {
 
 export default function InvoiceForm({ initialInvoice, isEditing = false }: InvoiceFormProps) {
   const router = useRouter();
-  const { clients, invoices, addInvoice, updateInvoice, exchangeRate, getNextInvoiceNumber } = useApp();
+  const { clients, invoices, addInvoice, updateInvoice, exchangeRate, getNextInvoiceNumber, settings } = useApp();
 
   // Form Fields State
   const [selectedClientId, setSelectedClientId] = useState<string>(
@@ -398,9 +398,8 @@ export default function InvoiceForm({ initialInvoice, isEditing = false }: Invoi
             <div className="grid grid-cols-2 gap-6 pt-4 border-t border-slate-100 text-xs">
               <div>
                 <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Émetteur</span>
-                <span className="block font-bold text-slate-900">Bruno Z. Consulting</span>
-                <span className="block text-slate-500 mt-1">Gombe, Kinshasa</span>
-                <span className="block text-slate-500">RDC</span>
+                <span className="block font-bold text-slate-900">{settings.companyName}</span>
+                {settings.address && <span className="block text-slate-500 mt-1">{settings.address}</span>}
               </div>
               <div>
                 <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Facturé à</span>

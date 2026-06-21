@@ -9,7 +9,7 @@ import { InvoiceStatus } from '@/types';
 export default function InvoiceDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const { invoices, updateInvoiceStatus, deleteInvoice } = useApp();
+  const { invoices, updateInvoiceStatus, deleteInvoice, settings } = useApp();
 
   const id = params?.id as string;
   const invoice = invoices.find(inv => inv.id === id);
@@ -154,9 +154,9 @@ export default function InvoiceDetailPage() {
             <div className="grid grid-cols-2 gap-6 pt-4 border-t border-slate-100 text-xs">
               <div>
                 <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Émetteur</span>
-                <span className="block font-bold text-slate-900">Bruno Z. Consulting</span>
-                <span className="block text-slate-500 mt-1">Gombe, Kinshasa</span>
-                <span className="block text-slate-500">RDC</span>
+                <span className="block font-bold text-slate-900">{settings.companyName}</span>
+                {settings.address && <span className="block text-slate-500 mt-1">{settings.address}</span>}
+                {settings.phone && <span className="block text-slate-500">{settings.phone}</span>}
               </div>
               <div>
                 <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Facturé à</span>

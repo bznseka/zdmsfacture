@@ -286,20 +286,35 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   }, [user]);
 
-  // Generate next sequential invoice number in format INV-YYYY-NNNN
+// Helper to get initials of company name
+function getCompanyInitials(name: string): string {
+  if (!name) return 'ZDM';
+  const words = name.trim().split(/\s+/);
+  if (words[0] && words[0] === words[0].toUpperCase() && words[0].length >= 2) {
+    return words[0].replace(/[^A-Z]/g, '');
+  }
+  const initials = words
+    .map(w => w.charAt(0).toUpperCase())
+    .join('')
+    .replace(/[^A-Z]/g, '');
+  return initials.slice(0, 4) || name.slice(0, 3).toUpperCase();
+}
+
+  // Generate next sequential invoice number in format INV-YYYY-NNNN-INITIALS
   const getNextInvoiceNumber = () => {
     const currentYear = new Date().getFullYear();
     const prefix = `INV-${currentYear}-`;
     
     const yearInvoices = invoices.filter(inv => inv.invoiceNumber.startsWith(prefix));
+    const initials = getCompanyInitials(settings.companyName);
     
     if (yearInvoices.length === 0) {
-      return `${prefix}0043`; // Offset matching mock highest number
+      return `${prefix}0043-${initials}`; // Offset matching mock highest number
     }
     
     const numbers = yearInvoices.map(inv => {
       const parts = inv.invoiceNumber.split('-');
-      if (parts.length === 3) {
+      if (parts.length >= 3) {
         const num = parseInt(parts[2], 10);
         return isNaN(num) ? 0 : num;
       }
@@ -308,7 +323,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     
     const maxNum = Math.max(...numbers, 42);
     const nextNum = maxNum + 1;
-    return `${prefix}${nextNum.toString().padStart(4, '0')}`;
+    return `${prefix}${nextNum.toString().padStart(4, '0')}-${initials}`;
   };
 
   // CLIENTS CRUD
