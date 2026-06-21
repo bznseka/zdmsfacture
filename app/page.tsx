@@ -692,11 +692,11 @@ export default function LandingPage() {
                     </li>
                   </ul>
                 </div>
-                <button 
+                <button
                   onClick={() => router.push(user ? "/subscriptions" : "/login?mode=signup")}
                   className="w-full py-4 border border-slate-200 rounded-xl font-semibold text-sm hover:bg-landing-light hover:border-landing-primary/30 text-[#151C27] transition-colors cursor-pointer"
                 >
-                  {user ? "Vérifier mon plan" : "Choisir ce plan"}
+                  {user ? "Vérifier mon plan" : "Commencer gratuitement"}
                 </button>
               </div>
 
@@ -727,8 +727,8 @@ export default function LandingPage() {
                     </li>
                   </ul>
                 </div>
-                <button 
-                  onClick={() => router.push(user ? "/subscriptions" : "/login?mode=signup")}
+                <button
+                  onClick={() => router.push(user ? "/subscriptions?plan=plan-starter&billing=monthly" : "/login?plan=plan-starter&billing=monthly")}
                   className="w-full py-4 bg-landing-primary text-white rounded-xl font-semibold text-sm hover:bg-landing-hover transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-landing-primary/20 cursor-pointer"
                 >
                   {user ? "S'abonner" : "S'abonner maintenant"}
@@ -759,8 +759,8 @@ export default function LandingPage() {
                     </li>
                   </ul>
                 </div>
-                <button 
-                  onClick={() => router.push(user ? "/subscriptions" : "/login?mode=signup")}
+                <button
+                  onClick={() => router.push(user ? "/subscriptions?plan=plan-pro&billing=monthly" : "/login?plan=plan-pro&billing=monthly")}
                   className="w-full py-4 border border-slate-200 rounded-xl font-semibold text-sm hover:bg-landing-light hover:border-landing-primary/30 text-[#151C27] transition-colors cursor-pointer"
                 >
                   {user ? "Négocier" : "Passer en Business"}

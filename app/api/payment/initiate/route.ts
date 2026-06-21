@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
 
 const PAWAPAY_BASE = process.env.PAWAPAY_BASE_URL || 'https://api.sandbox.pawapay.cloud';
 
-// Codes correspondants PawaPay pour la RDC — vérifiez dans votre tableau de bord PawaPay
 const CORRESPONDENT: Record<string, string> = {
-  airtel: 'AIRTEL_MONEY_CDG',
-  orange: 'ORANGE_MONEY_CDG',
+  airtel: 'AIRTEL_COD',
+  orange: 'ORANGE_COD',
+  vodacom: 'VODACOM_MPESA_COD',
 };
 
 function toMsisdn(phone: string): string {
@@ -17,14 +18,14 @@ function toMsisdn(phone: string): string {
 
 export async function POST(req: NextRequest) {
   try {
-    const { phone, network, amount, plan_id, billing_period } = await req.json();
+    const { phone, network, amount, plan_id, billing_period, user_id } = await req.json();
 
     const correspondent = CORRESPONDENT[network];
     if (!correspondent) {
       return NextResponse.json({ error: 'Réseau non supporté' }, { status: 400 });
     }
 
-    if (!phone || !amount || !plan_id) {
+    if (!phone || !amount || !plan_id || !user_id) {
       return NextResponse.json({ error: 'Paramètres manquants' }, { status: 400 });
     }
 
@@ -56,9 +57,23 @@ export async function POST(req: NextRequest) {
     const data = await res.json();
 
     if (data.status === 'REJECTED') {
-      const msg = data.rejectionReason?.rejectionMessage || 'Paiement rejeté par l\'opérateur';
+      const msg = data.rejectionReason?.rejectionMessage || "Paiement rejeté par l'opérateur";
       return NextResponse.json({ error: msg }, { status: 400 });
     }
+
+    // Sauvegarder les métadonnées pour le webhook et l'activation
+    const supabaseAdmin = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+
+    await supabaseAdmin.from('pending_payments').insert({
+      deposit_id: depositId,
+      user_id,
+      plan_id,
+      billing_period,
+      amount_usd: Number(amount),
+    });
 
     return NextResponse.json({ depositId, status: data.status ?? 'ACCEPTED' });
   } catch (err) {

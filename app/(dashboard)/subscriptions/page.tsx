@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, Suspense } from 'react';
 import { Check, Sparkles, Zap, Building, Loader2, X, Phone, CheckCircle, AlertCircle } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { useSearchParams, useRouter } from 'next/navigation';
 
 interface Plan {
   id: string;
@@ -75,8 +76,13 @@ const plans: Plan[] = [
   },
 ];
 
-export default function SubscriptionsPage() {
-  const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
+function SubscriptionsContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>(
+    (searchParams.get('billing') as 'monthly' | 'yearly') || 'monthly'
+  );
   const [subscription, setSubscription] = useState<ActiveSubscription | null>(null);
   const [user, setUser] = useState<{ id: string; email: string; name: string } | null>(null);
 
@@ -85,7 +91,7 @@ export default function SubscriptionsPage() {
   const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
   const [capturedBilling, setCapturedBilling] = useState<'monthly' | 'yearly'>('monthly');
   const [phone, setPhone] = useState('');
-  const [network, setNetwork] = useState<'airtel' | 'orange'>('airtel');
+  const [network, setNetwork] = useState<'airtel' | 'orange' | 'vodacom'>('airtel');
   const [depositId, setDepositId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -113,6 +119,15 @@ export default function SubscriptionsPage() {
     };
     init();
   }, [fetchSubscription]);
+
+  // Auto-ouvrir le modal si un plan est passé en URL (?plan=plan-pro)
+  useEffect(() => {
+    const planId = searchParams.get('plan');
+    if (!planId) return;
+    const found = plans.find((p) => p.id === planId);
+    if (found) openModal(found);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Arrêter le polling au démontage
   useEffect(() => () => { if (pollRef.current) clearInterval(pollRef.current); }, []);
@@ -220,7 +235,7 @@ export default function SubscriptionsPage() {
   const activePlanId = subscription?.plan_id ?? null;
 
   // ── Calcul du label réseau ───────────────────────────────────────────────
-  const networkLabel = network === 'airtel' ? 'Airtel Money' : 'Orange Money';
+  const networkLabel = network === 'airtel' ? 'Airtel Money' : network === 'orange' ? 'Orange Money' : 'Vodacom M-Pesa';
 
   return (
     <div className="space-y-8 animate-scale-in opacity-0 [animation-fill-mode:forwards]">
@@ -372,21 +387,20 @@ export default function SubscriptionsPage() {
                     <label className="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-wide">
                       Choisissez votre réseau
                     </label>
-                    <div className="grid grid-cols-2 gap-3">
-                      {(['airtel', 'orange'] as const).map((net) => (
+                    <div className="grid grid-cols-3 gap-3">
+                      {([
+                        { id: 'airtel', label: 'Airtel Money', emoji: '🔴', active: 'border-red-500 bg-red-50 text-red-700' },
+                        { id: 'orange', label: 'Orange Money', emoji: '🟠', active: 'border-orange-500 bg-orange-50 text-orange-700' },
+                        { id: 'vodacom', label: 'M-Pesa', emoji: '🔵', active: 'border-blue-500 bg-blue-50 text-blue-700' },
+                      ] as const).map((net) => (
                         <button
-                          key={net}
-                          onClick={() => setNetwork(net)}
-                          className={`py-3 px-4 rounded-xl border-2 text-sm font-bold transition-all duration-150 flex flex-col items-center gap-1
-                            ${network === net
-                              ? net === 'airtel'
-                                ? 'border-red-500 bg-red-50 text-red-700'
-                                : 'border-orange-500 bg-orange-50 text-orange-700'
-                              : 'border-slate-200 text-slate-500 hover:border-slate-300'
-                            }`}
+                          key={net.id}
+                          onClick={() => setNetwork(net.id)}
+                          className={`py-3 px-2 rounded-xl border-2 text-sm font-bold transition-all duration-150 flex flex-col items-center gap-1
+                            ${network === net.id ? net.active : 'border-slate-200 text-slate-500 hover:border-slate-300'}`}
                         >
-                          <span className="text-xl">{net === 'airtel' ? '🔴' : '🟠'}</span>
-                          <span>{net === 'airtel' ? 'Airtel Money' : 'Orange Money'}</span>
+                          <span className="text-xl">{net.emoji}</span>
+                          <span className="text-[11px] text-center leading-tight">{net.label}</span>
                         </button>
                       ))}
                     </div>
@@ -476,10 +490,10 @@ export default function SubscriptionsPage() {
                     </p>
                   </div>
                   <button
-                    onClick={closeModal}
+                    onClick={() => router.push('/overview')}
                     className="w-full h-12 bg-emerald-600 text-white text-sm font-bold rounded-xl hover:bg-emerald-700 transition-colors"
                   >
-                    Fermer
+                    Accéder au tableau de bord
                   </button>
                 </div>
               )}
@@ -515,5 +529,13 @@ export default function SubscriptionsPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function SubscriptionsPage() {
+  return (
+    <Suspense>
+      <SubscriptionsContent />
+    </Suspense>
   );
 }

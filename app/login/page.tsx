@@ -1,16 +1,23 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useApp } from '@/context/AppContext';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { Mail, Lock, Wallet, Eye, EyeOff, Loader2, AlertCircle, CheckCircle, Sparkles, ArrowRight } from 'lucide-react';
 
-export default function LoginPage() {
+function LoginForm() {
   const { user, authLoading } = useApp();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
-  const [isSignUp, setIsSignUp] = useState(false);
+  const planParam = searchParams.get('plan');
+  const billingParam = searchParams.get('billing') || 'monthly';
+  const redirectAfterAuth = planParam
+    ? `/subscriptions?plan=${planParam}&billing=${billingParam}`
+    : '/overview';
+
+  const [isSignUp, setIsSignUp] = useState(!!searchParams.get('mode'));
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -28,20 +35,20 @@ export default function LoginPage() {
   // Redirect if user is already logged in (but not if showing welcome screen)
   useEffect(() => {
     if (!authLoading && user && !showWelcome) {
-      router.push('/overview');
+      router.push(redirectAfterAuth);
     }
-  }, [user, authLoading, router, showWelcome]);
+  }, [user, authLoading, router, showWelcome, redirectAfterAuth]);
 
   // Handle welcome countdown and redirect
   useEffect(() => {
     if (showWelcome) {
       setTimeout(() => setCountdownStarted(true), 50);
       const timer = setTimeout(() => {
-        router.push('/overview');
+        router.push(redirectAfterAuth);
       }, 4050);
       return () => clearTimeout(timer);
     }
-  }, [showWelcome, router]);
+  }, [showWelcome, router, redirectAfterAuth]);
 
   const validateEmail = (emailStr: string) => {
     return /\S+@\S+\.\S+/.test(emailStr);
@@ -112,7 +119,7 @@ export default function LoginPage() {
 
         setSuccess('Connexion réussie. Redirection...');
         setTimeout(() => {
-          router.push('/overview');
+          router.push(redirectAfterAuth);
         }, 1000);
       }
     } catch (err: unknown) {
@@ -186,10 +193,10 @@ export default function LoginPage() {
 
           {/* Action button */}
           <button
-            onClick={() => router.push('/overview')}
+            onClick={() => router.push(redirectAfterAuth)}
             className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover text-white py-3.5 rounded-xl font-bold text-sm transition-all duration-300 shadow-md shadow-primary/20 hover:scale-[1.01] hover:translate-y-[-1px] group"
           >
-            <span>Accéder au Tableau de Bord</span>
+            <span>{planParam ? 'Continuer vers le paiement' : 'Accéder au Tableau de Bord'}</span>
             <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
           </button>
 
@@ -381,5 +388,13 @@ export default function LoginPage() {
 
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
   );
 }
