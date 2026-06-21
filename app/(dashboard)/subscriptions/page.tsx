@@ -92,7 +92,6 @@ function SubscriptionsContent() {
   const [capturedBilling, setCapturedBilling] = useState<'monthly' | 'yearly'>('monthly');
   const [phone, setPhone] = useState('');
   const [network, setNetwork] = useState<'airtel' | 'orange' | 'vodacom'>('airtel');
-  const [depositId, setDepositId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -137,7 +136,6 @@ function SubscriptionsContent() {
   const closeModal = () => {
     stopPolling();
     setModalState('closed');
-    setDepositId(null);
     setErrorMsg(null);
     setPhone('');
   };
@@ -222,7 +220,6 @@ function SubscriptionsContent() {
         return;
       }
 
-      setDepositId(data.depositId);
       setModalState('waiting');
       startPolling(data.depositId, selectedPlan, capturedBilling, user.id, amount);
     } catch {
