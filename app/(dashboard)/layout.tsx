@@ -3,8 +3,12 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
+import BottomNav from '@/components/layout/BottomNav';
+import PWAInstallPrompt from '@/components/layout/PWAInstallPrompt';
 import { useApp } from '@/context/AppContext';
 import { useRouter } from 'next/navigation';
+
+
 
 export default function DashboardLayout({
   children,
@@ -44,11 +48,18 @@ export default function DashboardLayout({
         {/* Top Header */}
         <Header onMenuToggle={() => setSidebarOpen(!sidebarOpen)} />
 
-        {/* Dynamic page content */}
-        <main className="flex-1 p-6 md:p-8 max-w-[1600px] w-full mx-auto">
+        {/* Dynamic page content — pb-20 compensates for bottom nav on mobile */}
+        <main className="flex-1 p-4 sm:p-6 md:p-8 pb-20 lg:pb-8 max-w-[1600px] w-full mx-auto">
           {children}
         </main>
       </div>
+
+      {/* Mobile bottom navigation bar (hidden on lg+) */}
+      <BottomNav />
+
+      {/* PWA install prompt banner */}
+      <PWAInstallPrompt />
     </div>
   );
 }
+

@@ -18,7 +18,37 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   title: "zdmsFacture — Gestion Facturation & Devis Premium",
   description: "Solution SaaS moderne de facturation multidevise pour entreprises en Afrique.",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "zdmsFacture",
+  },
+  formatDetection: {
+    telephone: false,
+  },
+  openGraph: {
+    type: "website",
+    siteName: "zdmsFacture",
+    title: "zdmsFacture — Gestion Facturation & Devis Premium",
+    description: "Solution SaaS moderne de facturation multidevise pour entreprises en Afrique.",
+  },
+  twitter: {
+    card: "summary",
+    title: "zdmsFacture — Gestion Facturation & Devis Premium",
+    description: "Solution SaaS moderne de facturation multidevise pour entreprises en Afrique.",
+  },
 };
+
+export const viewport = {
+  themeColor: "#7C3AED",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
+};
+
 
 export default function RootLayout({
   children,

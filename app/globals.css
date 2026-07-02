@@ -5,6 +5,11 @@
 :root {
   --background: #F4F4F6;
   --foreground: #1E1B4B; /* Dark indigo for premium text */
+  /* PWA safe area insets for notched devices (iPhone X+, Android) */
+  --safe-area-top: env(safe-area-inset-top, 0px);
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-left: env(safe-area-inset-left, 0px);
+  --safe-area-right: env(safe-area-inset-right, 0px);
 }
 
 body {
@@ -13,7 +18,13 @@ body {
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Prevent text size adjustment on orientation change (iOS) */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  /* Improve touch experience */
+  touch-action: manipulation;
 }
+
 
 /* Custom scrollbar for premium feel */
 ::-webkit-scrollbar {
@@ -119,5 +130,84 @@ body {
     aspect-ratio: auto !important;
     height: auto !important;
   }
+}
+
+/* ==========================================
+   PWA & RESPONSIVE MOBILE ENHANCEMENTS
+   ========================================== */
+
+/* Safe area support for bottom navigation on notched iOS devices */
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Ensure bottom nav sits above iOS home indicator */
+nav.fixed.bottom-0 {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Ensure consistent tap target size for mobile accessibility (min 44x44px) */
+@media (max-width: 1023px) {
+  button,
+  a {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Exception for inline/icon buttons */
+  button.p-1, button.p-1\.5, button.p-2 {
+    min-height: auto;
+    min-width: auto;
+  }
+}
+
+/* PWA install prompt / banner styles */
+.pwa-install-banner {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 60;
+  background: linear-gradient(135deg, #7C3AED, #6D28D9);
+  color: white;
+  border-radius: 16px;
+  padding: 12px 20px;
+  box-shadow: 0 8px 32px rgba(124, 58, 237, 0.35);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: calc(100vw - 32px);
+  width: max-content;
+  animation: slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* Standalone mode — hide browser-specific UI */
+@media (display-mode: standalone) {
+  /* In PWA standalone mode, hide elements meant for browser-only usage */
+  .browser-only {
+    display: none !important;
+  }
+}
+
+/* Responsive charts — prevent Recharts overflow on small screens */
+.recharts-wrapper {
+  max-width: 100% !important;
+}
+
+/* Smooth overscroll behavior for native feel on mobile */
+html {
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Disable text selection for app-like feel on interactive elements */
+.no-select {
+  -webkit-user-select: none;
+  user-select: none;
 }
 
