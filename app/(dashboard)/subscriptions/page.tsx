@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect, useRef, useCallback, Suspense } from 'react';
 import { Check, Sparkles, Zap, Building, Loader2, X, Phone, CheckCircle, AlertCircle } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
+import { useApp } from '@/context/AppContext';
+import { apiFetch } from '@/lib/api-client';
 import { useSearchParams, useRouter } from 'next/navigation';
 
 interface Plan {
@@ -17,9 +18,9 @@ interface Plan {
 }
 
 interface ActiveSubscription {
-  plan_id: string;
-  billing_period: 'monthly' | 'yearly';
-  expires_at: string;
+  planId: string;
+  billingPeriod: 'monthly' | 'yearly';
+  expiresAt: string;
 }
 
 type ModalState = 'closed' | 'form' | 'waiting' | 'success' | 'error';
@@ -79,12 +80,12 @@ const plans: Plan[] = [
 function SubscriptionsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { user } = useApp();
 
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>(
     (searchParams.get('billing') as 'monthly' | 'yearly') || 'monthly'
   );
   const [subscription, setSubscription] = useState<ActiveSubscription | null>(null);
-  const [user, setUser] = useState<{ id: string; email: string; name: string } | null>(null);
 
   // État du modal de paiement
   const [modalState, setModalState] = useState<ModalState>('closed');
@@ -96,28 +97,15 @@ function SubscriptionsContent() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const fetchSubscription = useCallback(async (userId: string) => {
-    const { data } = await supabase
-      .from('subscriptions')
-      .select('plan_id, billing_period, expires_at')
-      .eq('user_id', userId)
-      .eq('status', 'active')
-      .gte('expires_at', new Date().toISOString())
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle();
-    if (data) setSubscription(data as ActiveSubscription);
+  const fetchSubscription = useCallback(async () => {
+    const data = await apiFetch<ActiveSubscription | null>('/api/subscriptions/current');
+    if (data) setSubscription(data);
   }, []);
 
   useEffect(() => {
-    const init = async () => {
-      const { data: { user: u } } = await supabase.auth.getUser();
-      if (!u) return;
-      setUser({ id: u.id, email: u.email || '', name: u.user_metadata?.full_name || u.email || '' });
-      await fetchSubscription(u.id);
-    };
-    init();
-  }, [fetchSubscription]);
+    if (!user) return;
+    fetchSubscription();
+  }, [user, fetchSubscription]);
 
   // Auto-ouvrir le modal si un plan est passé en URL (?plan=plan-pro)
   useEffect(() => {
@@ -175,7 +163,7 @@ function SubscriptionsContent() {
             });
             if (r.ok) {
               setModalState('success');
-              await fetchSubscription(userId);
+              await fetchSubscription();
             } else {
               setModalState('error');
               setErrorMsg("Paiement reçu mais erreur d'activation. Contactez le support.");
@@ -229,7 +217,7 @@ function SubscriptionsContent() {
     }
   };
 
-  const activePlanId = subscription?.plan_id ?? null;
+  const activePlanId = subscription?.planId ?? null;
 
   // ── Calcul du label réseau ───────────────────────────────────────────────
   const networkLabel = network === 'airtel' ? 'Airtel Money' : network === 'orange' ? 'Orange Money' : 'Vodacom M-Pesa';

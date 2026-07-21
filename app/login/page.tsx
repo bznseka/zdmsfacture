@@ -3,7 +3,7 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { useApp } from '@/context/AppContext';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { supabase } from '@/lib/supabase';
+import { signIn } from 'next-auth/react';
 import { Mail, Lock, Wallet, Eye, EyeOff, Loader2, AlertCircle, CheckCircle, Sparkles, ArrowRight } from 'lucide-react';
 
 function LoginForm() {
@@ -84,38 +84,43 @@ function LoginForm() {
 
     try {
       if (isSignUp) {
-        // Sign Up workflow - call RPC bypass to bypass email rate limit
-        const { data, error: signUpError } = await supabase.rpc('signup_user_bypass_email', {
-          user_email: email,
-          user_password: password,
+        // Sign Up workflow
+        const res = await fetch('/api/auth/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
         });
+        const body = await res.json().catch(() => ({}));
 
-        if (signUpError) throw signUpError;
-
-        const res = data as { success: boolean; message: string; user_id?: string };
-        if (!res.success) {
-          throw new Error(res.message);
+        if (!res.ok) {
+          throw new Error(body.error || 'Une erreur est survenue lors de la création du compte.');
         }
 
         // Auto login the newly created user
-        const { error: signInError } = await supabase.auth.signInWithPassword({
+        const signInResult = await signIn('credentials', {
           email,
           password,
+          redirect: false,
         });
 
-        if (signInError) throw signInError;
+        if (signInResult?.error) {
+          throw new Error('CredentialsSignin');
+        }
 
         setSuccess('Votre compte a été créé avec succès !');
         setWelcomeEmail(email);
         setShowWelcome(true);
       } else {
         // Sign In workflow
-        const { error: signInError } = await supabase.auth.signInWithPassword({
+        const signInResult = await signIn('credentials', {
           email,
           password,
+          redirect: false,
         });
 
-        if (signInError) throw signInError;
+        if (signInResult?.error) {
+          throw new Error('CredentialsSignin');
+        }
 
         setSuccess('Connexion réussie. Redirection...');
         setTimeout(() => {
@@ -126,12 +131,8 @@ function LoginForm() {
       console.error('Auth action error:', err);
       const errorDetails = err as { message?: string };
       let errorMsg = errorDetails?.message || 'Une erreur est survenue lors de l\'authentification.';
-      if (errorMsg.includes('Invalid login credentials')) {
+      if (errorMsg.includes('CredentialsSignin')) {
         errorMsg = 'Identifiants de connexion invalides.';
-      } else if (errorMsg.includes('User already registered')) {
-        errorMsg = 'Cette adresse e-mail est déjà utilisée.';
-      } else if (errorMsg.includes('Email not confirmed')) {
-        errorMsg = 'Veuillez confirmer votre adresse e-mail avant de vous connecter.';
       }
       setError(errorMsg);
     } finally {

@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useApp } from '@/context/AppContext';
-import { supabase } from '@/lib/supabase';
+import { signOut } from 'next-auth/react';
 import { 
   LayoutDashboard, 
   FileText, 
@@ -41,8 +41,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
   const handleLogout = async () => {
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      await signOut({ callbackUrl: '/login' });
     } catch (err) {
       console.error('Error logging out:', err);
     }
@@ -170,7 +169,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
               <span className="text-[10px] text-slate-400 font-semibold tracking-wider uppercase">
                 Utilisateur
               </span>
-              <span className="text-xs text-slate-700 font-medium truncate" title={user.email}>
+              <span className="text-xs text-slate-700 font-medium truncate" title={user.email ?? undefined}>
                 {user.email}
               </span>
             </div>

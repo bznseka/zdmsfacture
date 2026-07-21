@@ -16,11 +16,25 @@ import InvoiceTable from '@/components/dashboard/InvoiceTable';
 import TopClients from '@/components/dashboard/TopClients';
 import { useApp } from '@/context/AppContext';
 
+const DEFAULT_COMPANY_NAME = 'Ma Société';
+
+function getDisplayName(email: string | null | undefined, companyName: string): string {
+  if (companyName && companyName !== DEFAULT_COMPANY_NAME) {
+    return companyName;
+  }
+  if (email) {
+    const localPart = email.split('@')[0];
+    return localPart.charAt(0).toUpperCase() + localPart.slice(1);
+  }
+  return '';
+}
+
 export default function OverviewPage() {
   const router = useRouter();
-  const { invoices, exchangeRate, loading } = useApp();
+  const { invoices, exchangeRate, loading, user, settings } = useApp();
+  const displayName = getDisplayName(user?.email, settings.companyName);
 
-  // Dynamic calculations based on live Supabase invoices list
+  // Dynamic calculations based on live invoices list
   const totalInvoicesCount = invoices.length;
   
   const totalPaidUsd = invoices
@@ -115,7 +129,7 @@ export default function OverviewPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 animate-fade-in-up opacity-0 [animation-fill-mode:forwards] [animation-delay:100ms]">
         <div>
           <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">
-            Bonjour Bruno !
+            Bonjour {displayName} !
           </h1>
           <p className="text-sm md:text-base text-slate-500 font-medium mt-1">
             Voici l&apos;état de vos finances pour aujourd&apos;hui.

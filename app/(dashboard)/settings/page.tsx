@@ -31,7 +31,7 @@ export default function SettingsPage() {
     mobileMoneyDetails: 'M-Pesa: +243 812 345 678 | Orange Money: +243 897 111 222',
   });
 
-  // Sync with Supabase settings context when loaded
+  // Sync with settings context when loaded
   useEffect(() => {
     if (settings) {
       setFormData(settings);

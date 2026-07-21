@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { db } from '@/db';
+import { pendingPayments } from '@/db/schema';
 
 const PAWAPAY_BASE = process.env.PAWAPAY_BASE_URL || 'https://api.sandbox.pawapay.cloud';
 
@@ -62,17 +63,12 @@ export async function POST(req: NextRequest) {
     }
 
     // Sauvegarder les métadonnées pour le webhook et l'activation
-    const supabaseAdmin = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    );
-
-    await supabaseAdmin.from('pending_payments').insert({
-      deposit_id: depositId,
-      user_id,
-      plan_id,
-      billing_period,
-      amount_usd: Number(amount),
+    await db.insert(pendingPayments).values({
+      depositId,
+      userId: user_id,
+      planId: plan_id,
+      billingPeriod: billing_period,
+      amountUsd: String(Number(amount)),
     });
 
     return NextResponse.json({ depositId, status: data.status ?? 'ACCEPTED' });

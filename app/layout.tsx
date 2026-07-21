@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
+import { SessionProvider } from "next-auth/react";
 import { AppProvider } from "@/context/AppContext";
 import "./globals.css";
 
@@ -60,9 +61,11 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${plusJakartaSans.variable} font-sans antialiased h-full text-slate-800 bg-[#F4F4F6]`}
       >
-        <AppProvider>
-          {children}
-        </AppProvider>
+        <SessionProvider>
+          <AppProvider>
+            {children}
+          </AppProvider>
+        </SessionProvider>
       </body>
     </html>
   );
