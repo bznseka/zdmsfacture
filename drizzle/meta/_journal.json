@@ -15,6 +15,13 @@
       "when": 1784680901266,
       "tag": "0001_tearful_darkhawk",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1784683320121,
+      "tag": "0002_red_shatterstar",
+      "breakpoints": true
     }
   ]
 }

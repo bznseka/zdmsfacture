@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react';
 import { Client, Invoice, InvoiceStatus, CompanySettings, Payment, Refund } from '@/types';
 import { apiFetch } from '@/lib/api-client';
 
-type SessionUser = { id: string; email?: string | null };
+type SessionUser = { id: string; email?: string | null; role?: string };
 
 interface AppContextType {
   clients: Client[];
@@ -63,7 +63,7 @@ function convertFrenchDateToDb(dateStr: string): string {
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession();
   const user: SessionUser | null = session?.user?.id
-    ? { id: session.user.id, email: session.user.email }
+    ? { id: session.user.id, email: session.user.email, role: session.user.role }
     : null;
   const authLoading = status === 'loading';
 

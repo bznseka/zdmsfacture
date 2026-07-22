@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { db } from "@/db";
-import { invoices } from "@/db/schema";
+import { invoices, users } from "@/db/schema";
 
 export class UnauthorizedError extends Error {
   constructor(message = "Non authentifié") {
@@ -22,6 +22,28 @@ export async function requireUserId(): Promise<string> {
   const session = await auth();
   if (!session?.user?.id) {
     throw new UnauthorizedError();
+  }
+
+  const [row] = await db
+    .select({ status: users.status })
+    .from(users)
+    .where(eq(users.id, session.user.id))
+    .limit(1);
+
+  if (!row || row.status === "suspended") {
+    throw new ForbiddenError("Ce compte a été suspendu.");
+  }
+
+  return session.user.id;
+}
+
+export async function requireAdmin(): Promise<string> {
+  const session = await auth();
+  if (!session?.user?.id) {
+    throw new UnauthorizedError();
+  }
+  if (session.user.role !== "admin") {
+    throw new ForbiddenError();
   }
   return session.user.id;
 }

@@ -15,19 +15,7 @@ import DonutChart from '@/components/dashboard/DonutChart';
 import InvoiceTable from '@/components/dashboard/InvoiceTable';
 import TopClients from '@/components/dashboard/TopClients';
 import { useApp } from '@/context/AppContext';
-
-const DEFAULT_COMPANY_NAME = 'Ma Société';
-
-function getDisplayName(email: string | null | undefined, companyName: string): string {
-  if (companyName && companyName !== DEFAULT_COMPANY_NAME) {
-    return companyName;
-  }
-  if (email) {
-    const localPart = email.split('@')[0];
-    return localPart.charAt(0).toUpperCase() + localPart.slice(1);
-  }
-  return '';
-}
+import { getDisplayName } from '@/lib/display-name';
 
 export default function OverviewPage() {
   const router = useRouter();

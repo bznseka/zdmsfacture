@@ -25,11 +25,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           .where(eq(users.email, email.toLowerCase()))
           .limit(1);
         if (!user) return null;
+        if (user.status === "suspended") return null;
 
         const valid = await bcrypt.compare(password, user.passwordHash);
         if (!valid) return null;
 
-        return { id: user.id, email: user.email };
+        return { id: user.id, email: user.email, role: user.role };
       },
     }),
   ],

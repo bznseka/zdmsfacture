@@ -22,6 +22,12 @@ export const authConfig = {
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
+
+      if (nextUrl.pathname.startsWith("/admin")) {
+        if (auth?.user?.role === "admin") return true;
+        return isLoggedIn ? Response.redirect(new URL("/overview", nextUrl)) : false;
+      }
+
       const isProtected = PROTECTED_PREFIXES.some((prefix) =>
         nextUrl.pathname.startsWith(prefix)
       );
@@ -39,12 +45,14 @@ export const authConfig = {
     jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+        token.role = user.role;
       }
       return token;
     },
     session({ session, token }) {
       if (session.user) {
         session.user.id = token.id;
+        session.user.role = token.role;
       }
       return session;
     },
