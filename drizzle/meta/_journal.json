@@ -22,6 +22,13 @@
       "when": 1784683320121,
       "tag": "0002_red_shatterstar",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1784711841578,
+      "tag": "0003_optimal_stature",
+      "breakpoints": true
     }
   ]
 }

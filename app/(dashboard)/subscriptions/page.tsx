@@ -1,10 +1,24 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback, Suspense } from 'react';
-import { Check, Sparkles, Zap, Building, Loader2, X, Phone, CheckCircle, AlertCircle } from 'lucide-react';
+import { Check, Sparkles, Zap, Building, Loader2, X, Phone, CheckCircle, AlertCircle, CreditCard, Smartphone, ArrowLeft } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
 import { apiFetch } from '@/lib/api-client';
 import { useSearchParams, useRouter } from 'next/navigation';
+
+interface PaypalButtonsConfig {
+  createSubscription: () => Promise<string>;
+  onApprove: (data: { subscriptionID: string }) => Promise<void>;
+  onError: (err: unknown) => void;
+}
+
+declare global {
+  interface Window {
+    paypal?: {
+      Buttons: (config: PaypalButtonsConfig) => { render: (el: HTMLElement) => void };
+    };
+  }
+}
 
 interface Plan {
   id: string;
@@ -23,7 +37,7 @@ interface ActiveSubscription {
   expiresAt: string;
 }
 
-type ModalState = 'closed' | 'form' | 'waiting' | 'success' | 'error';
+type ModalState = 'closed' | 'method' | 'form' | 'waiting' | 'paypal' | 'success' | 'error';
 
 const plans: Plan[] = [
   {
@@ -95,17 +109,32 @@ function SubscriptionsContent() {
   const [network, setNetwork] = useState<'airtel' | 'orange' | 'vodacom'>('airtel');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [isCancelling, setIsCancelling] = useState(false);
+  const [stripeBanner, setStripeBanner] = useState<'success' | 'cancelled' | null>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const paypalContainerRef = useRef<HTMLDivElement | null>(null);
+  const paypalRenderedFor = useRef<string | null>(null);
 
   const fetchSubscription = useCallback(async () => {
     const data = await apiFetch<ActiveSubscription | null>('/api/subscriptions/current');
-    if (data) setSubscription(data);
+    setSubscription(data);
   }, []);
 
   useEffect(() => {
     if (!user) return;
     fetchSubscription();
   }, [user, fetchSubscription]);
+
+  // Retour depuis Stripe Checkout (?stripe=success|cancelled)
+  useEffect(() => {
+    const stripeParam = searchParams.get('stripe');
+    if (stripeParam === 'success' || stripeParam === 'cancelled') {
+      setStripeBanner(stripeParam);
+      if (stripeParam === 'success') fetchSubscription();
+      router.replace('/subscriptions');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Auto-ouvrir le modal si un plan est passé en URL (?plan=plan-pro)
   useEffect(() => {
@@ -126,6 +155,7 @@ function SubscriptionsContent() {
     setModalState('closed');
     setErrorMsg(null);
     setPhone('');
+    paypalRenderedFor.current = null;
   };
 
   const openModal = (plan: Plan) => {
@@ -134,7 +164,7 @@ function SubscriptionsContent() {
     setPhone('');
     setNetwork('airtel');
     setErrorMsg(null);
-    setModalState('form');
+    setModalState('method');
   };
 
   const startPolling = useCallback(
@@ -217,6 +247,101 @@ function SubscriptionsContent() {
     }
   };
 
+  const handleStripeCheckout = async () => {
+    if (!selectedPlan) return;
+    setIsSubmitting(true);
+    setErrorMsg(null);
+    try {
+      const data = await apiFetch<{ url: string }>('/api/payment/stripe/checkout', {
+        method: 'POST',
+        body: JSON.stringify({ planId: selectedPlan.id, billingPeriod: capturedBilling }),
+      });
+      window.location.href = data.url;
+    } catch (err) {
+      setErrorMsg(err instanceof Error ? err.message : "Erreur lors de la redirection vers Stripe.");
+      setIsSubmitting(false);
+    }
+  };
+
+  const renderPaypalButtons = useCallback(() => {
+    if (!selectedPlan || !window.paypal || !paypalContainerRef.current) return;
+    const key = `${selectedPlan.id}-${capturedBilling}`;
+    if (paypalRenderedFor.current === key) return;
+    paypalRenderedFor.current = key;
+    paypalContainerRef.current.innerHTML = '';
+
+    window.paypal
+      .Buttons({
+        createSubscription: async () => {
+          const data = await apiFetch<{ subscriptionID: string }>('/api/payment/paypal/create-subscription', {
+            method: 'POST',
+            body: JSON.stringify({ planId: selectedPlan.id, billingPeriod: capturedBilling }),
+          });
+          return data.subscriptionID;
+        },
+        onApprove: async (data: { subscriptionID: string }) => {
+          try {
+            await apiFetch('/api/payment/paypal/confirm', {
+              method: 'POST',
+              body: JSON.stringify({ subscriptionID: data.subscriptionID }),
+            });
+            setModalState('success');
+            await fetchSubscription();
+          } catch (err) {
+            setModalState('error');
+            setErrorMsg(err instanceof Error ? err.message : "Erreur lors de la confirmation PayPal.");
+          }
+        },
+        onError: () => {
+          setModalState('error');
+          setErrorMsg('Le paiement PayPal a échoué. Veuillez réessayer.');
+        },
+      })
+      .render(paypalContainerRef.current);
+  }, [selectedPlan, capturedBilling, fetchSubscription]);
+
+  useEffect(() => {
+    if (modalState !== 'paypal') return;
+
+    const clientId = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID;
+    if (!clientId) {
+      setErrorMsg("PayPal n'est pas configuré.");
+      return;
+    }
+
+    if (window.paypal) {
+      renderPaypalButtons();
+      return;
+    }
+
+    const existingScript = document.getElementById('paypal-sdk');
+    if (existingScript) {
+      existingScript.addEventListener('load', renderPaypalButtons);
+      return () => existingScript.removeEventListener('load', renderPaypalButtons);
+    }
+
+    const script = document.createElement('script');
+    script.id = 'paypal-sdk';
+    script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}&vault=true&intent=subscription`;
+    script.addEventListener('load', renderPaypalButtons);
+    document.body.appendChild(script);
+    return () => script.removeEventListener('load', renderPaypalButtons);
+  }, [modalState, renderPaypalButtons]);
+
+  const handleCancelSubscription = async () => {
+    if (!confirm('Voulez-vous vraiment annuler votre abonnement ?')) return;
+    setIsCancelling(true);
+    try {
+      await apiFetch('/api/subscriptions/cancel', { method: 'POST' });
+      await fetchSubscription();
+      alert('Abonnement annulé.');
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Erreur lors de l'annulation.");
+    } finally {
+      setIsCancelling(false);
+    }
+  };
+
   const activePlanId = subscription?.planId ?? null;
 
   // ── Calcul du label réseau ───────────────────────────────────────────────
@@ -256,6 +381,19 @@ function SubscriptionsContent() {
           </button>
         </div>
       </div>
+
+      {stripeBanner && (
+        <div className={`flex items-center gap-2 p-4 rounded-xl text-sm font-semibold ${
+          stripeBanner === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-amber-50 text-amber-700 border border-amber-100'
+        }`}>
+          {stripeBanner === 'success' ? <CheckCircle className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
+          <span>
+            {stripeBanner === 'success'
+              ? 'Paiement Stripe réussi, votre abonnement est activé.'
+              : 'Paiement Stripe annulé.'}
+          </span>
+        </div>
+      )}
 
       {/* Grille des forfaits */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch animate-fade-in-up opacity-0 [animation-fill-mode:forwards] [animation-delay:200ms]">
@@ -309,10 +447,19 @@ function SubscriptionsContent() {
 
               <div className="mt-8">
                 {isCurrent ? (
-                  <button disabled className="w-full h-12 text-sm font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-xl flex items-center justify-center gap-2">
-                    <Check className="w-4 h-4" />
-                    <span>Forfait actuel</span>
-                  </button>
+                  <div className="space-y-2">
+                    <button disabled className="w-full h-12 text-sm font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-xl flex items-center justify-center gap-2">
+                      <Check className="w-4 h-4" />
+                      <span>Forfait actuel</span>
+                    </button>
+                    <button
+                      onClick={handleCancelSubscription}
+                      disabled={isCancelling}
+                      className="w-full h-9 text-xs font-bold text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-xl transition-colors disabled:opacity-50"
+                    >
+                      Annuler mon abonnement
+                    </button>
+                  </div>
                 ) : (
                   <button
                     onClick={() => openModal(plan)}
@@ -342,9 +489,25 @@ function SubscriptionsContent() {
 
             {/* En-tête du modal */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
-              <div>
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Paiement Mobile Money</p>
-                {selectedPlan && (
+              <div className="flex items-center gap-2">
+                {(modalState === 'form' || modalState === 'paypal') && (
+                  <button
+                    onClick={() => setModalState('method')}
+                    className="p-1.5 -ml-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                  </button>
+                )}
+                <div>
+                  <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+                    {modalState === 'method' && 'Choisir un moyen de paiement'}
+                    {modalState === 'form' && 'Paiement Mobile Money'}
+                    {modalState === 'paypal' && 'Paiement PayPal'}
+                    {modalState === 'waiting' && 'Paiement Mobile Money'}
+                    {modalState === 'success' && 'Confirmation'}
+                    {modalState === 'error' && 'Erreur'}
+                  </p>
+                  {selectedPlan && (
                   <p className="text-base font-extrabold text-slate-900 mt-0.5">
                     Forfait {selectedPlan.name} —{' '}
                     <span className="text-primary">
@@ -352,7 +515,8 @@ function SubscriptionsContent() {
                     </span>
                     {capturedBilling === 'yearly' && <span className="text-xs text-slate-400 font-semibold"> / an</span>}
                   </p>
-                )}
+                  )}
+                </div>
               </div>
               <button
                 onClick={closeModal}
@@ -363,6 +527,71 @@ function SubscriptionsContent() {
             </div>
 
             <div className="px-6 py-5">
+
+              {/* ── Choix du moyen de paiement ── */}
+              {modalState === 'method' && (
+                <div className="space-y-3">
+                  <button
+                    onClick={() => setModalState('form')}
+                    className="w-full flex items-center gap-4 p-4 rounded-xl border-2 border-slate-200 hover:border-primary/40 hover:bg-primary-light/30 transition-all duration-150 text-left"
+                  >
+                    <div className="w-10 h-10 rounded-xl bg-primary-light text-primary flex items-center justify-center flex-shrink-0">
+                      <Smartphone className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-slate-800">Mobile Money</p>
+                      <p className="text-xs text-slate-400 font-medium">Airtel Money, Orange Money, M-Pesa</p>
+                    </div>
+                  </button>
+
+                  <button
+                    onClick={() => { setErrorMsg(null); handleStripeCheckout(); }}
+                    disabled={isSubmitting}
+                    className="w-full flex items-center gap-4 p-4 rounded-xl border-2 border-slate-200 hover:border-primary/40 hover:bg-primary-light/30 transition-all duration-150 text-left disabled:opacity-50"
+                  >
+                    <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0">
+                      {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <CreditCard className="w-5 h-5" />}
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-slate-800">Carte bancaire</p>
+                      <p className="text-xs text-slate-400 font-medium">Visa, Mastercard, Amex — via Stripe</p>
+                    </div>
+                  </button>
+
+                  {errorMsg && (
+                    <div className="flex items-start gap-2 bg-red-50 border border-red-100 rounded-xl p-3 text-xs font-semibold text-red-700">
+                      <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                      {errorMsg}
+                    </div>
+                  )}
+
+                  <button
+                    onClick={() => { setErrorMsg(null); setModalState('paypal'); }}
+                    className="w-full flex items-center gap-4 p-4 rounded-xl border-2 border-slate-200 hover:border-primary/40 hover:bg-primary-light/30 transition-all duration-150 text-left"
+                  >
+                    <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center flex-shrink-0 font-black text-xs">
+                      PP
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-slate-800">PayPal</p>
+                      <p className="text-xs text-slate-400 font-medium">Payer avec votre compte PayPal</p>
+                    </div>
+                  </button>
+                </div>
+              )}
+
+              {/* ── PayPal ── */}
+              {modalState === 'paypal' && (
+                <div className="space-y-4">
+                  {errorMsg && (
+                    <div className="flex items-start gap-2 bg-red-50 border border-red-100 rounded-xl p-3 text-xs font-semibold text-red-700">
+                      <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                      {errorMsg}
+                    </div>
+                  )}
+                  <div ref={paypalContainerRef} />
+                </div>
+              )}
 
               {/* ── Formulaire ── */}
               {modalState === 'form' && (

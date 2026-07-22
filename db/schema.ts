@@ -173,6 +173,9 @@ export const subscriptions = pgTable(
     status: text("status").notNull().default("active"),
     amountUsd: numeric("amount_usd"),
     depositId: text("deposit_id").unique(),
+    provider: text("provider").notNull().default("pawapay"),
+    providerSubscriptionId: text("provider_subscription_id").unique(),
+    providerCustomerId: text("provider_customer_id"),
     expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
   },
@@ -184,6 +187,10 @@ export const subscriptions = pgTable(
     check(
       "subscriptions_status_check",
       sql`${table.status} in ('active','cancelled','expired')`
+    ),
+    check(
+      "subscriptions_provider_check",
+      sql`${table.provider} in ('pawapay','stripe','paypal')`
     ),
   ]
 );
