@@ -21,7 +21,7 @@ export default function SignupsChart({ data }: SignupsChartProps) {
         <p className="text-xs text-slate-400 font-medium">Comptes créés par mois (6 derniers mois)</p>
       </div>
 
-      <div className="relative flex-1">
+      <div className="relative w-full h-[240px]">
         {isMounted ? (
           <div className="absolute inset-0">
             <ResponsiveContainer width="100%" height="100%">
