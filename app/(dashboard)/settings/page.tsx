@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Save, ShieldAlert, Sparkles, Building2, Landmark, RefreshCw } from 'lucide-react';
+import { Save, Sparkles, Building2, Landmark, RefreshCw } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
 
 interface SettingsData {
@@ -10,26 +10,24 @@ interface SettingsData {
   phone: string;
   address: string;
   taxNumber: string;
-  currency: string;
   taxRate: number;
-  exchangeRate: number;
   mobileMoneyDetails: string;
 }
+
+const DEFAULT_FORM_DATA: SettingsData = {
+  companyName: 'Ma Société',
+  email: '',
+  phone: '',
+  address: '',
+  taxNumber: '',
+  taxRate: 18,
+  mobileMoneyDetails: '',
+};
 
 export default function SettingsPage() {
   const { settings, updateSettings, loading } = useApp();
 
-  const [formData, setFormData] = useState<SettingsData>({
-    companyName: 'Bruno Z. Consulting',
-    email: 'contact@bruno.cd',
-    phone: '+243 812 345 678',
-    address: 'Gombe, Kinshasa, République Démocratique du Congo',
-    taxNumber: 'CD/KIN/RCCM/26-B-0042',
-    currency: 'USD',
-    taxRate: 18,
-    exchangeRate: 2800,
-    mobileMoneyDetails: 'M-Pesa: +243 812 345 678 | Orange Money: +243 897 111 222',
-  });
+  const [formData, setFormData] = useState<SettingsData>(DEFAULT_FORM_DATA);
 
   // Sync with settings context when loaded
   useEffect(() => {
@@ -51,21 +49,9 @@ export default function SettingsPage() {
 
   const handleResetDefaults = async () => {
     if (confirm('Voulez-vous réinitialiser tous les paramètres aux valeurs par défaut ?')) {
-      const defaults: SettingsData = {
-        companyName: 'Bruno Z. Consulting',
-        email: 'contact@bruno.cd',
-        phone: '+243 812 345 678',
-        address: 'Gombe, Kinshasa, République Démocratique du Congo',
-        taxNumber: 'CD/KIN/RCCM/26-B-0042',
-        currency: 'USD',
-        taxRate: 18,
-        exchangeRate: 2800,
-        mobileMoneyDetails: 'M-Pesa: +243 812 345 678 | Orange Money: +243 897 111 222',
-      };
-      
       try {
-        await updateSettings(defaults);
-        setFormData(defaults);
+        await updateSettings(DEFAULT_FORM_DATA);
+        setFormData(DEFAULT_FORM_DATA);
         alert('Valeurs par défaut restaurées.');
       } catch (err) {
         console.error(err);
@@ -124,7 +110,7 @@ export default function SettingsPage() {
 
               <div>
                 <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">
-                  Numéro RCCM / Fisc (Optionnel)
+                  Numéro d&apos;identification fiscale (Optionnel)
                 </label>
                 <input
                   type="text"
@@ -178,24 +164,10 @@ export default function SettingsPage() {
           <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-6">
             <h3 className="text-base font-bold text-slate-900 border-b border-slate-50 pb-3 flex items-center gap-2">
               <Landmark className="w-5 h-5 text-primary" />
-              <span>Configurations financières (Taux & Taxes)</span>
+              <span>Configuration fiscale</span>
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div>
-                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">
-                  Devise par défaut
-                </label>
-                <select
-                  value={formData.currency}
-                  onChange={(e) => setFormData(prev => ({ ...prev, currency: e.target.value }))}
-                  className="w-full h-11 px-4 text-sm bg-slate-50 border border-slate-200/80 rounded-xl focus:outline-none focus:bg-white focus:border-primary transition-all duration-200"
-                >
-                  <option value="USD">Dollar Américain ($)</option>
-                  <option value="CDF">Franc Congolais (FC)</option>
-                </select>
-              </div>
-
               <div>
                 <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">
                   Taux de TVA (%)
@@ -205,19 +177,6 @@ export default function SettingsPage() {
                   required
                   value={formData.taxRate}
                   onChange={(e) => setFormData(prev => ({ ...prev, taxRate: Number(e.target.value) }))}
-                  className="w-full h-11 px-4 text-sm bg-slate-50 border border-slate-200/80 rounded-xl focus:outline-none focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all duration-200"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">
-                  Taux de change (1 USD = ? CDF)
-                </label>
-                <input
-                  type="number"
-                  required
-                  value={formData.exchangeRate}
-                  onChange={(e) => setFormData(prev => ({ ...prev, exchangeRate: Number(e.target.value) }))}
                   className="w-full h-11 px-4 text-sm bg-slate-50 border border-slate-200/80 rounded-xl focus:outline-none focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all duration-200"
                 />
               </div>
@@ -264,18 +223,6 @@ export default function SettingsPage() {
               <RefreshCw className="w-4 h-4" />
               <span>Restaurer les valeurs d&apos;origine</span>
             </button>
-          </div>
-
-          {/* Regional details card */}
-          <div className="bg-gradient-to-tr from-primary/5 to-purple-500/5 p-6 rounded-2xl border border-primary/10 space-y-3">
-            <h4 className="text-xs font-bold text-primary uppercase tracking-wider flex items-center gap-1.5">
-              <ShieldAlert className="w-4 h-4" />
-              <span>Note Régionale (Afrique / RDC)</span>
-            </h4>
-            <p className="text-[11px] text-slate-500 font-medium leading-relaxed">
-              Le taux de TVA de 18% correspond au régime fiscal de la République Démocratique du Congo.
-              La double devise facilite l&apos;émission légale en Dollars (USD) tout en affichant la conversion en Francs Congolais (CDF) pour les déclarations locales.
-            </p>
           </div>
         </div>
       </form>

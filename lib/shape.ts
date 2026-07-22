@@ -25,8 +25,6 @@ type InvoiceRow = {
   taxRate: string;
   taxAmount: string;
   totalUsd: string;
-  totalCdf: string;
-  exchangeRate: string;
   notes: string | null;
 };
 
@@ -37,7 +35,7 @@ export function shapeClient(row: ClientRow) {
     email: row.email,
     phone: row.phone || "",
     address: row.address || "",
-    country: row.country || "CD",
+    country: row.country || "",
   };
 }
 
@@ -57,7 +55,7 @@ const UNKNOWN_CLIENT = {
   email: "",
   phone: "",
   address: "",
-  country: "CD",
+  country: "",
 };
 
 export function shapeInvoice(
@@ -75,8 +73,6 @@ export function shapeInvoice(
     taxRate: Number(row.taxRate),
     taxAmount: Number(row.taxAmount),
     totalUsd: Number(row.totalUsd),
-    totalCdf: Number(row.totalCdf),
-    exchangeRate: Number(row.exchangeRate),
     notes: row.notes || "",
     client: client ? shapeClient(client) : UNKNOWN_CLIENT,
     items: items.map(shapeItem),
@@ -88,7 +84,6 @@ export function shapePayment(
     id: string;
     invoiceId: string;
     amountUsd: string;
-    amountCdf: string;
     method: string;
     reference: string | null;
     date: string;
@@ -102,7 +97,6 @@ export function shapePayment(
     invoiceNumber: invoiceNumber || "INV-XXXX",
     clientName: clientName || "Client Inconnu",
     amountUsd: Number(row.amountUsd),
-    amountCdf: Number(row.amountCdf),
     method: row.method,
     reference: row.reference || "",
     date: row.date,
@@ -114,7 +108,6 @@ export function shapeRefund(
     id: string;
     invoiceId: string;
     amountUsd: string;
-    amountCdf: string;
     status: string;
     reason: string | null;
     date: string;
@@ -128,7 +121,6 @@ export function shapeRefund(
     invoiceNumber: invoiceNumber || "INV-XXXX",
     clientName: clientName || "Client Inconnu",
     amountUsd: Number(row.amountUsd),
-    amountCdf: Number(row.amountCdf),
     status: row.status,
     reason: row.reason || "",
     date: row.date,
@@ -141,9 +133,7 @@ export function shapeSettings(row: {
   phone: string | null;
   address: string;
   taxNumber: string | null;
-  currency: string;
   taxRate: string;
-  exchangeRate: string;
   mobileMoneyDetails: string | null;
 }) {
   return {
@@ -152,9 +142,7 @@ export function shapeSettings(row: {
     phone: row.phone || "",
     address: row.address,
     taxNumber: row.taxNumber || "",
-    currency: row.currency,
     taxRate: Number(row.taxRate),
-    exchangeRate: Number(row.exchangeRate),
     mobileMoneyDetails: row.mobileMoneyDetails || "",
   };
 }

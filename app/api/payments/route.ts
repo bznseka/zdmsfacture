@@ -40,7 +40,6 @@ export async function POST(request: Request) {
       .values({
         invoiceId: body.invoiceId,
         amountUsd: String(body.amountUsd),
-        amountCdf: String(body.amountCdf),
         method: body.method,
         reference: body.reference,
         date: body.date,

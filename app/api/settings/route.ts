@@ -31,9 +31,7 @@ export async function PATCH(request: Request) {
     if (body.phone !== undefined) updates.phone = body.phone;
     if (body.address !== undefined) updates.address = body.address;
     if (body.taxNumber !== undefined) updates.taxNumber = body.taxNumber;
-    if (body.currency !== undefined) updates.currency = body.currency;
     if (body.taxRate !== undefined) updates.taxRate = String(body.taxRate);
-    if (body.exchangeRate !== undefined) updates.exchangeRate = String(body.exchangeRate);
     if (body.mobileMoneyDetails !== undefined) updates.mobileMoneyDetails = body.mobileMoneyDetails;
 
     const [row] = await db

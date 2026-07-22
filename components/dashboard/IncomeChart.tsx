@@ -68,9 +68,6 @@ export default function IncomeChart({ data }: IncomeChartProps) {
                           <p className="text-sm font-bold text-primary mt-1">
                             ${payload[0].value?.toLocaleString()} USD
                           </p>
-                          <p className="text-[10px] font-semibold text-slate-500 mt-0.5">
-                            {(payload[0].value as number * 2800).toLocaleString()} CDF
-                          </p>
                         </div>
                       );
                     }

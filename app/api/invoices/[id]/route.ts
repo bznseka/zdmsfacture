@@ -24,7 +24,6 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       if (body.taxRate !== undefined) updates.taxRate = String(body.taxRate);
       if (body.taxAmount !== undefined) updates.taxAmount = String(body.taxAmount);
       if (body.totalUsd !== undefined) updates.totalUsd = String(body.totalUsd);
-      if (body.totalCdf !== undefined) updates.totalCdf = String(body.totalCdf);
       if (body.notes !== undefined) updates.notes = body.notes;
 
       const [invoice] = await tx

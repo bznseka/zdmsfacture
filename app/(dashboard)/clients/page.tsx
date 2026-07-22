@@ -20,7 +20,7 @@ export default function ClientsPage() {
     email: '',
     phone: '',
     address: '',
-    country: 'CD',
+    country: '',
   });
 
   const handleOpenAddModal = () => {
@@ -30,7 +30,7 @@ export default function ClientsPage() {
       email: '',
       phone: '',
       address: '',
-      country: 'CD',
+      country: '',
     });
     setIsModalOpen(true);
   };
@@ -42,7 +42,7 @@ export default function ClientsPage() {
       email: client.email,
       phone: client.phone,
       address: client.address,
-      country: client.country || 'CD',
+      country: client.country || '',
     });
     setIsModalOpen(true);
   };
@@ -150,9 +150,11 @@ export default function ClientsPage() {
                       <h3 className="text-sm font-bold text-slate-800 line-clamp-1">
                         {client.name}
                       </h3>
-                      <span className="text-[10px] bg-slate-100 text-slate-500 font-bold px-2 py-0.5 rounded-lg border border-slate-200/60 mt-1 inline-block">
-                        {client.country === 'CD' ? 'République Démocratique du Congo' : client.country}
-                      </span>
+                      {client.country && (
+                        <span className="text-[10px] bg-slate-100 text-slate-500 font-bold px-2 py-0.5 rounded-lg border border-slate-200/60 mt-1 inline-block">
+                          {client.country}
+                        </span>
+                      )}
                     </div>
                   </div>
 
@@ -236,7 +238,7 @@ export default function ClientsPage() {
                 <input
                   type="text"
                   required
-                  placeholder="Ex: Vodacom Congo RDC"
+                  placeholder="Ex: Acme Corporation"
                   value={formData.name}
                   onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                   className="w-full h-11 px-4 text-sm bg-slate-50 border border-slate-200/80 rounded-xl focus:outline-none focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all duration-200"
@@ -250,7 +252,7 @@ export default function ClientsPage() {
                 <input
                   type="email"
                   required
-                  placeholder="Ex: finance@vodacom.cd"
+                  placeholder="Ex: finance@acme.com"
                   value={formData.email}
                   onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                   className="w-full h-11 px-4 text-sm bg-slate-50 border border-slate-200/80 rounded-xl focus:outline-none focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all duration-200"
@@ -263,7 +265,7 @@ export default function ClientsPage() {
                 </label>
                 <input
                   type="text"
-                  placeholder="Ex: +243 812 345 678"
+                  placeholder="Ex: +1 555 123 4567"
                   value={formData.phone}
                   onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
                   className="w-full h-11 px-4 text-sm bg-slate-50 border border-slate-200/80 rounded-xl focus:outline-none focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all duration-200"
@@ -276,7 +278,7 @@ export default function ClientsPage() {
                 </label>
                 <input
                   type="text"
-                  placeholder="Ex: Boulevard du 30 Juin, Kinshasa Gombe"
+                  placeholder="Ex: 123 Main Street, New York"
                   value={formData.address}
                   onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
                   className="w-full h-11 px-4 text-sm bg-slate-50 border border-slate-200/80 rounded-xl focus:outline-none focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all duration-200"

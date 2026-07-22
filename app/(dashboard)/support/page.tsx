@@ -23,12 +23,8 @@ export default function SupportPage() {
 
   const faqs: FaqItem[] = [
     {
-      question: 'Comment configurer le taux de change pour le Franc Congolais (CDF) ?',
-      answer: 'Allez dans la page "Paramètres" depuis la barre latérale. Dans la section "Configurations financières", vous pouvez mettre à jour le taux de change (par exemple, 1 USD = 2800 CDF). Tous les calculs indicatifs sur l’aperçu des factures seront instantanément mis à jour.'
-    },
-    {
-      question: 'Comment appliquer la TVA à 18% (régime RDC) ?',
-      answer: 'La TVA est configurée à 18% par défaut sur l’application pour correspondre à la réglementation congolaise. Si votre entreprise n’est pas assujettie à la TVA, vous pouvez modifier ce taux à 0% dans la page "Paramètres".'
+      question: 'Comment configurer le taux de TVA de mon entreprise ?',
+      answer: 'Allez dans la page "Paramètres" depuis la barre latérale. Dans la section "Configuration fiscale", vous pouvez définir le taux de TVA applicable à votre activité (18% par défaut). Si votre entreprise n’est pas assujettie à la TVA, vous pouvez modifier ce taux à 0%.'
     },
     {
       question: 'Comment enregistrer un paiement Mobile Money (M-Pesa, Orange Money, Airtel Money) ?',

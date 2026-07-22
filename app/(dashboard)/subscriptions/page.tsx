@@ -36,7 +36,7 @@ const plans: Plan[] = [
     features: [
       "Jusqu'à 15 factures par mois",
       'Gestion de 50 clients',
-      'Double devise USD & Franc Congolais',
+      'Facturation professionnelle en USD',
       '1 utilisateur unique',
       'Support email standard',
     ],
@@ -52,7 +52,7 @@ const plans: Plan[] = [
     features: [
       'Factures & Devis illimités',
       'Nombre de clients illimité',
-      'Double devise USD & CDF',
+      'Facturation professionnelle en USD',
       "Jusqu'à 5 utilisateurs collaborateurs",
       'Rapports statistiques avancés',
       'Génération PDF de marque blanche',
@@ -332,7 +332,7 @@ function SubscriptionsContent() {
       </div>
 
       <p className="text-center text-xs text-slate-400 font-medium animate-fade-in-up opacity-0 [animation-fill-mode:forwards] [animation-delay:300ms]">
-        Paiement sécurisé via Mobile Money · Airtel Money &amp; Orange Money · RDC
+        Paiement sécurisé via Mobile Money · Airtel Money &amp; Orange Money
       </p>
 
       {/* ── Modal de paiement ─────────────────────────────────────────────── */}

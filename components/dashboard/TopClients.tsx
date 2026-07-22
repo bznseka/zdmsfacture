@@ -4,7 +4,6 @@ interface TopClientItem {
   id: string;
   name: string;
   totalUsd: number;
-  totalCdf: number;
   invoicesCount: number;
   initials: string;
 }
@@ -54,9 +53,6 @@ export default function TopClients({ clients }: TopClientsProps) {
               <div className="text-right">
                 <span className="block text-sm font-bold text-slate-900">
                   ${client.totalUsd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                </span>
-                <span className="block text-[10px] font-bold text-slate-400 mt-0.5">
-                  {Math.round(client.totalCdf).toLocaleString('fr-FR')} FC
                 </span>
               </div>
             </div>

@@ -213,12 +213,7 @@ export default function PaymentsPage() {
                         </span>
                       </td>
                       <td className="px-6 py-4.5 text-right whitespace-nowrap">
-                        <div className="flex flex-col items-end">
-                          <span className="font-bold text-slate-900">${payment.amountUsd.toLocaleString()} USD</span>
-                          <span className="text-[11px] font-bold text-slate-400 mt-0.5">
-                            {Math.round(payment.amountCdf).toLocaleString('fr-FR')} FC
-                          </span>
-                        </div>
+                        <span className="font-bold text-slate-900">${payment.amountUsd.toLocaleString()} USD</span>
                       </td>
                     </tr>
                   );
@@ -287,9 +282,9 @@ export default function PaymentsPage() {
                   onChange={(e) => setFormData(prev => ({ ...prev, method: e.target.value as Payment['method'] }))}
                   className="w-full h-11 px-4 text-sm bg-slate-50 border border-slate-200/80 rounded-xl focus:outline-none focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all duration-200"
                 >
-                  <option value="mobile_money">Mobile Money (M-Pesa, Orange Money, Airtel Money)</option>
+                  <option value="mobile_money">Mobile Money</option>
                   <option value="bank">Virement bancaire / Dépôt guichet</option>
-                  <option value="cash">Espèces (Cash USD / CDF)</option>
+                  <option value="cash">Espèces (Cash)</option>
                 </select>
               </div>
 

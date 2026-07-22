@@ -18,7 +18,7 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 
 export const metadata: Metadata = {
   title: "zdmsFacture — Gestion Facturation & Devis Premium",
-  description: "Solution SaaS moderne de facturation multidevise pour entreprises en Afrique.",
+  description: "Solution SaaS moderne de facturation pour entreprises internationales.",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
@@ -32,12 +32,12 @@ export const metadata: Metadata = {
     type: "website",
     siteName: "zdmsFacture",
     title: "zdmsFacture — Gestion Facturation & Devis Premium",
-    description: "Solution SaaS moderne de facturation multidevise pour entreprises en Afrique.",
+    description: "Solution SaaS moderne de facturation pour entreprises internationales.",
   },
   twitter: {
     card: "summary",
     title: "zdmsFacture — Gestion Facturation & Devis Premium",
-    description: "Solution SaaS moderne de facturation multidevise pour entreprises en Afrique.",
+    description: "Solution SaaS moderne de facturation pour entreprises internationales.",
   },
 };
 

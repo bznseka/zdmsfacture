@@ -40,7 +40,6 @@ export async function POST(request: Request) {
       .values({
         invoiceId: body.invoiceId,
         amountUsd: String(body.amountUsd),
-        amountCdf: String(body.amountCdf),
         status: body.status || "pending",
         reason: body.reason,
         date: body.date,

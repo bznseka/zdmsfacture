@@ -183,11 +183,11 @@ function LoginForm() {
               </li>
               <li className="flex items-center gap-2">
                 <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                <span>Enregistrez vos premiers clients en RDC.</span>
+                <span>Enregistrez vos premiers clients.</span>
               </li>
               <li className="flex items-center gap-2">
                 <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                <span>Générez des factures professionnelles en USD/CDF avec TVA.</span>
+                <span>Générez des factures professionnelles en USD avec TVA.</span>
               </li>
             </ul>
           </div>
@@ -383,7 +383,7 @@ function LoginForm() {
         {/* Support context indicator */}
         <div className="mt-8 text-center">
           <p className="text-[11px] text-slate-400 font-medium">
-            Propulsé par la République Démocratique du Congo
+            Facturation professionnelle, où que vous soyez
           </p>
         </div>
 

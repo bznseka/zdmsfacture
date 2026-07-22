@@ -146,7 +146,6 @@ export default function InvoiceDetailPage() {
               </div>
               <div className="text-right">
                 <span className="text-lg font-black text-primary block">zdmsFacture</span>
-                <span className="text-[10px] font-semibold text-slate-400 tracking-wider block mt-1">Kinshasa, RDC</span>
               </div>
             </div>
 
@@ -218,11 +217,6 @@ export default function InvoiceDetailPage() {
                 <div className="flex justify-between items-center text-sm border-t border-slate-100 pt-2.5">
                   <span className="font-bold text-slate-900">Total Net (USD)</span>
                   <span className="text-base font-black text-primary">${invoice.totalUsd.toLocaleString()} USD</span>
-                </div>
-                {/* CDF indicatif */}
-                <div className="flex justify-between items-center text-[10px] bg-slate-50 p-2.5 rounded-lg border border-slate-100 font-bold text-slate-500">
-                  <span>Montant converti (CDF)</span>
-                  <span className="text-slate-800">{Math.round(invoice.totalCdf).toLocaleString('fr-FR')} FC</span>
                 </div>
               </div>
             </div>

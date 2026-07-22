@@ -24,7 +24,7 @@ export const clients = pgTable("clients", {
   email: text("email").notNull(),
   phone: text("phone"),
   address: text("address"),
-  country: text("country").default("CD"),
+  country: text("country"),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
   userId: uuid("user_id")
     .notNull()
@@ -44,8 +44,6 @@ export const invoices = pgTable(
     taxRate: numeric("tax_rate").notNull().default("18"),
     taxAmount: numeric("tax_amount").notNull().default("0"),
     totalUsd: numeric("total_usd").notNull().default("0"),
-    totalCdf: numeric("total_cdf").notNull().default("0"),
-    exchangeRate: numeric("exchange_rate").notNull().default("2800"),
     notes: text("notes"),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
     userId: uuid("user_id")
@@ -81,7 +79,6 @@ export const payments = pgTable(
       .notNull()
       .references(() => invoices.id, { onDelete: "cascade" }),
     amountUsd: numeric("amount_usd").notNull(),
-    amountCdf: numeric("amount_cdf").notNull(),
     method: text("method").notNull(),
     reference: text("reference"),
     date: date("date").notNull(),
@@ -103,7 +100,6 @@ export const refunds = pgTable(
       .notNull()
       .references(() => invoices.id, { onDelete: "cascade" }),
     amountUsd: numeric("amount_usd").notNull(),
-    amountCdf: numeric("amount_cdf").notNull(),
     status: text("status").notNull().default("pending"),
     reason: text("reason").notNull(),
     date: date("date").notNull(),
@@ -126,9 +122,7 @@ export const settings = pgTable("settings", {
   phone: text("phone"),
   address: text("address").notNull().default(""),
   taxNumber: text("tax_number"),
-  currency: text("currency").notNull().default("USD"),
   taxRate: numeric("tax_rate").notNull().default("18"),
-  exchangeRate: numeric("exchange_rate").notNull().default("2800"),
   mobileMoneyDetails: text("mobile_money_details"),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
 });

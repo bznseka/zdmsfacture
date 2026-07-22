@@ -173,14 +173,9 @@ export default function InvoicesPage() {
                       </td>
                       {/* Billed totals */}
                       <td className="px-6 py-4.5 text-right whitespace-nowrap">
-                        <div className="flex flex-col items-end">
-                          <span className="font-bold text-slate-900">
-                            ${invoice.totalUsd.toLocaleString('en-US')} USD
-                          </span>
-                          <span className="text-[11px] font-bold text-slate-400 mt-0.5">
-                            {Math.round(invoice.totalCdf).toLocaleString('fr-FR')} FC
-                          </span>
-                        </div>
+                        <span className="font-bold text-slate-900">
+                          ${invoice.totalUsd.toLocaleString('en-US')} USD
+                        </span>
                       </td>
                       {/* Actions */}
                       <td className="px-6 py-4.5 whitespace-nowrap">

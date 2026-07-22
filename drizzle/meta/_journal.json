@@ -8,6 +8,13 @@
       "when": 1784665315198,
       "tag": "0000_plain_tarot",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1784680901266,
+      "tag": "0001_tearful_darkhawk",
+      "breakpoints": true
     }
   ]
 }

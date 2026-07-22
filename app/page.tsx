@@ -40,13 +40,13 @@ export default function LandingPage() {
   const router = useRouter();
 
   const companies = [
-    { name: 'Malewa Food', icon: <Utensils className="w-6 h-6 text-slate-500" /> },
-    { name: 'Kongo Mart', icon: <ShoppingBag className="w-6 h-6 text-slate-500" /> },
-    { name: 'Elikia Tech', icon: <Cpu className="w-6 h-6 text-slate-500" /> },
-    { name: 'Mwinda Energy', icon: <Zap className="w-6 h-6 text-slate-500" /> },
-    { name: 'Noki Noki Delivery', icon: <Truck className="w-6 h-6 text-slate-500" /> },
-    { name: 'Lualaba Mining Service', icon: <Layers className="w-6 h-6 text-slate-500" /> },
-    { name: 'Bana Express', icon: <Coins className="w-6 h-6 text-slate-500" /> },
+    { name: 'Metro Food Co.', icon: <Utensils className="w-6 h-6 text-slate-500" /> },
+    { name: 'Urban Mart', icon: <ShoppingBag className="w-6 h-6 text-slate-500" /> },
+    { name: 'Nova Tech', icon: <Cpu className="w-6 h-6 text-slate-500" /> },
+    { name: 'Volt Energy', icon: <Zap className="w-6 h-6 text-slate-500" /> },
+    { name: 'Swift Delivery', icon: <Truck className="w-6 h-6 text-slate-500" /> },
+    { name: 'Atlas Mining Services', icon: <Layers className="w-6 h-6 text-slate-500" /> },
+    { name: 'Horizon Express', icon: <Coins className="w-6 h-6 text-slate-500" /> },
   ];
   
   // Mobile drawer state
@@ -316,7 +316,7 @@ export default function LandingPage() {
               Fini les factures sur <span className="text-landing-primary relative inline-block">Word <span className="absolute bottom-1 left-0 w-full h-[6px] bg-landing-primary/15 rounded-full"></span></span> et <span className="text-landing-primary relative inline-block">Excel <span className="absolute bottom-1 left-0 w-full h-[6px] bg-landing-primary/15 rounded-full"></span></span>
             </h1>
             <p className="text-base sm:text-lg text-slate-600 mb-10 max-w-lg leading-relaxed">
-              Le SaaS de facturation simple, fluide et moderne conçu spécifiquement pour les entrepreneurs et entreprises d&apos;Afrique en quête de professionnalisme.
+              Le SaaS de facturation simple, fluide et moderne conçu pour les entrepreneurs et entreprises du monde entier en quête de professionnalisme.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
@@ -373,7 +373,7 @@ export default function LandingPage() {
                   </div>
                   <div>
                     <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Paiement reçu</p>
-                    <p className="font-display font-black text-landing-primary text-lg">+150 000 CDF</p>
+                    <p className="font-display font-black text-landing-primary text-lg">+$1,500 USD</p>
                   </div>
                 </div>
               </div>
@@ -385,7 +385,7 @@ export default function LandingPage() {
         <section className="py-12 bg-white border-y border-slate-100 overflow-hidden relative">
           <div className="max-w-7xl mx-auto px-6 mb-6 text-center">
             <p className="text-xs font-bold uppercase tracking-widest text-slate-400">
-              Ils nous font confiance pour leur facturation en RDC et en Afrique
+              Ils nous font confiance pour leur facturation partout dans le monde
             </p>
           </div>
           
@@ -479,7 +479,7 @@ export default function LandingPage() {
               <div className="relative z-10">
                 <h3 className="font-display text-2xl sm:text-3xl font-extrabold mb-6 leading-tight">Factures professionnelles en 2 clics</h3>
                 <p className="opacity-75 text-base sm:text-lg mb-8 leading-relaxed">
-                  Générez des PDF élégants conformes aux normes de la RDC et internationales. Votre identité, vos devises (USD & CDF), votre succès.
+                  Générez des PDF élégants conformes aux standards internationaux. Votre identité, votre marque, votre succès.
                 </p>
               </div>
               <div className="mt-auto relative z-10">
@@ -503,9 +503,9 @@ export default function LandingPage() {
                 <Percent className="w-6 h-6" />
               </div>
               <div>
-                <h3 className="font-display text-xl sm:text-2xl font-bold mb-3 text-[#151C27]">TVA & Double Devise fluides</h3>
+                <h3 className="font-display text-xl sm:text-2xl font-bold mb-3 text-[#151C27]">Gestion de la TVA simplifiée</h3>
                 <p className="text-slate-600 text-sm leading-relaxed">
-                  Configurez vos taux de taxe et convertissez automatiquement vos montants de Dollars (USD) en Francs Congolais (CDF) selon le taux de change en direct.
+                  Configurez votre taux de taxe et laissez l&apos;application calculer automatiquement les montants sur chaque facture.
                 </p>
               </div>
             </div>
@@ -595,7 +595,7 @@ export default function LandingPage() {
                 </div>
                 <div>
                   <p className="font-bold text-[#151C27] text-sm">Koffi</p>
-                  <p className="text-xs text-slate-500">Abidjan, CIV</p>
+                  <p className="text-xs text-slate-500">Paris, France</p>
                 </div>
               </div>
             </div>
@@ -603,7 +603,7 @@ export default function LandingPage() {
             {/* Testimonial 2 */}
             <div className="p-6 sm:p-8 rounded-[32px] bg-white border border-slate-100 flex flex-col justify-between floating-card">
               <p className="text-slate-600 italic mb-8 text-sm leading-relaxed">
-                &quot;L&apos;automatisation du calcul de la TVA et de la double devise USD/CDF m&apos;a évité tellement d&apos;erreurs comptables. Un must-have en RDC.&quot;
+                &quot;L&apos;automatisation du calcul de la TVA m&apos;a évité tellement d&apos;erreurs comptables. Un vrai must-have au quotidien.&quot;
               </p>
               <div className="flex items-center gap-4 border-t border-slate-50 pt-4">
                 <div className="w-12 h-12 rounded-full overflow-hidden shrink-0 border-2 border-landing-primary/15">
@@ -615,7 +615,7 @@ export default function LandingPage() {
                 </div>
                 <div>
                   <p className="font-bold text-[#151C27] text-sm">Amadou</p>
-                  <p className="text-xs text-slate-500">Douala, CMR</p>
+                  <p className="text-xs text-slate-500">Toronto, Canada</p>
                 </div>
               </div>
             </div>
@@ -635,7 +635,7 @@ export default function LandingPage() {
                 </div>
                 <div>
                   <p className="font-bold text-[#151C27] text-sm">Mireille</p>
-                  <p className="text-xs text-slate-500">Libreville, GAB</p>
+                  <p className="text-xs text-slate-500">Singapour</p>
                 </div>
               </div>
             </div>
@@ -643,7 +643,7 @@ export default function LandingPage() {
             {/* Testimonial 4 */}
             <div className="p-6 sm:p-8 rounded-[32px] bg-white border border-slate-100 flex flex-col justify-between floating-card">
               <p className="text-slate-600 italic mb-8 text-sm leading-relaxed">
-                &quot;Je gère mes clients à Kinshasa et mes encaissements de règlements sans stress. Le module de paiements mobiles est fantastique.&quot;
+                &quot;Je gère mes clients partout dans le monde et mes encaissements sans stress. Le module de paiements est fantastique.&quot;
               </p>
               <div className="flex items-center gap-4 border-t border-slate-50 pt-4">
                 <div className="w-12 h-12 rounded-full overflow-hidden shrink-0 border-2 border-landing-primary/15">
@@ -655,7 +655,7 @@ export default function LandingPage() {
                 </div>
                 <div>
                   <p className="font-bold text-[#151C27] text-sm">Jean-Paul</p>
-                  <p className="text-xs text-slate-500">Kinshasa, DRC</p>
+                  <p className="text-xs text-slate-500">Londres, Royaume-Uni</p>
                 </div>
               </div>
             </div>
@@ -874,7 +874,7 @@ export default function LandingPage() {
 
         {/* Footer bottom */}
         <div className="max-w-7xl mx-auto px-6 mt-16 pt-8 border-t border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4 text-slate-500 text-xs font-semibold">
-          <p>© 2026 zdmsFacture. Fait avec fierté en République Démocratique du Congo.</p>
+          <p>© 2026 zdmsFacture. Tous droits réservés.</p>
           <div className="flex gap-8">
             <a href="#" className="hover:text-landing-primary transition-colors">CGU</a>
             <a href="#" className="hover:text-landing-primary transition-colors">Politique de Cookies</a>

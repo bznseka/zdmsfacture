@@ -32,7 +32,7 @@ export async function POST(request: Request) {
         email: body.email,
         phone: body.phone,
         address: body.address,
-        country: body.country || "CD",
+        country: body.country || "",
         userId,
       })
       .returning();

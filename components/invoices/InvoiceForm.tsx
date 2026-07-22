@@ -13,7 +13,7 @@ interface InvoiceFormProps {
 
 export default function InvoiceForm({ initialInvoice, isEditing = false }: InvoiceFormProps) {
   const router = useRouter();
-  const { clients, invoices, addInvoice, updateInvoice, exchangeRate, getNextInvoiceNumber, settings } = useApp();
+  const { clients, invoices, addInvoice, updateInvoice, getNextInvoiceNumber, settings } = useApp();
 
   // Form Fields State
   const [selectedClientId, setSelectedClientId] = useState<string>(
@@ -120,10 +120,9 @@ export default function InvoiceForm({ initialInvoice, isEditing = false }: Invoi
   // Financial calculations (Rounded to integers as requested)
   const lineTotals = items.map(item => Math.round(item.quantity * item.unitPrice));
   const subtotal = Math.round(lineTotals.reduce((sum, current) => sum + current, 0));
-  const taxRate = 18; // 18% Standard DRC
+  const taxRate = 18; // Taux de TVA par défaut
   const taxAmount = Math.round(subtotal * (taxRate / 100));
   const totalUsd = subtotal + taxAmount;
-  const totalCdf = totalUsd * exchangeRate;
 
   // Submit form handler
   const handleSaveInvoice = async (status: InvoiceStatus) => {
@@ -340,7 +339,7 @@ export default function InvoiceForm({ initialInvoice, isEditing = false }: Invoi
             <h3 className="text-base font-bold text-slate-900 border-b border-slate-50 pb-3">Notes & Conditions</h3>
             <textarea
               rows={3}
-              placeholder="Conditions de paiement, informations de versement bancaire ou de paiement mobile money (M-Pesa, Orange Money, Airtel Money)..."
+              placeholder="Conditions de paiement, coordonnées bancaires ou instructions de règlement..."
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               className="w-full p-4 text-sm bg-slate-50 border border-slate-200/80 rounded-xl focus:outline-none focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all duration-200 resize-none"
@@ -390,7 +389,6 @@ export default function InvoiceForm({ initialInvoice, isEditing = false }: Invoi
               </div>
               <div className="text-right">
                 <span className="text-sm font-black text-primary block">zdmsFacture</span>
-                <span className="text-[10px] font-semibold text-slate-400 tracking-wider block mt-1">Kinshasa, RDC</span>
               </div>
             </div>
 
@@ -472,11 +470,6 @@ export default function InvoiceForm({ initialInvoice, isEditing = false }: Invoi
                 <div className="flex justify-between items-center text-sm border-t border-slate-100 pt-2.5">
                   <span className="font-bold text-slate-900">Total Net (USD)</span>
                   <span className="text-base font-black text-primary">${totalUsd.toLocaleString()} USD</span>
-                </div>
-                {/* CDF indicative conversion */}
-                <div className="flex justify-between items-center text-[10px] bg-slate-50 p-2 rounded-lg border border-slate-100 font-bold text-slate-500">
-                  <span>Montant indicatif (CDF)</span>
-                  <span className="text-slate-800">{Math.round(totalCdf).toLocaleString('fr-FR')} FC</span>
                 </div>
               </div>
             </div>

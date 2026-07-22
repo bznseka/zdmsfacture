@@ -31,7 +31,7 @@ function getDisplayName(email: string | null | undefined, companyName: string): 
 
 export default function OverviewPage() {
   const router = useRouter();
-  const { invoices, exchangeRate, loading, user, settings } = useApp();
+  const { invoices, loading, user, settings } = useApp();
   const displayName = getDisplayName(user?.email, settings.companyName);
 
   // Dynamic calculations based on live invoices list
@@ -109,7 +109,6 @@ export default function OverviewPage() {
         id: String(idx + 1),
         name: c.name,
         totalUsd: c.totalUsd,
-        totalCdf: c.totalUsd * exchangeRate,
         invoicesCount: c.count,
         initials: c.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase(),
       }));
@@ -151,7 +150,7 @@ export default function OverviewPage() {
         <StatCard
           title="Factures émises"
           valueUsd={`${totalInvoicesCount} factures`}
-          valueCdf="Volume total d'activité"
+          subtitle="Volume total d'activité"
           icon={FileText}
           iconBgColor="bg-blue-50"
           iconTextColor="text-blue-600"
@@ -159,7 +158,6 @@ export default function OverviewPage() {
         <StatCard
           title="Revenu payé"
           valueUsd={`$${totalPaidUsd.toLocaleString('en-US', { minimumFractionDigits: 2 })}`}
-          valueCdf={`${Math.round(totalPaidUsd * exchangeRate).toLocaleString('fr-FR')} FC`}
           growth={{ value: 14.5, isPositive: true }}
           icon={CheckCircle}
           iconBgColor="bg-emerald-50"
@@ -168,7 +166,6 @@ export default function OverviewPage() {
         <StatCard
           title="Revenu en attente"
           valueUsd={`$${totalPendingUsd.toLocaleString('en-US', { minimumFractionDigits: 2 })}`}
-          valueCdf={`${Math.round(totalPendingUsd * exchangeRate).toLocaleString('fr-FR')} FC`}
           icon={Clock}
           iconBgColor="bg-amber-50"
           iconTextColor="text-amber-600"
@@ -176,7 +173,6 @@ export default function OverviewPage() {
         <StatCard
           title="Revenu en retard"
           valueUsd={`$${totalOverdueUsd.toLocaleString('en-US', { minimumFractionDigits: 2 })}`}
-          valueCdf={`${Math.round(totalOverdueUsd * exchangeRate).toLocaleString('fr-FR')} FC`}
           icon={AlertTriangle}
           iconBgColor="bg-rose-50"
           iconTextColor="text-rose-600"

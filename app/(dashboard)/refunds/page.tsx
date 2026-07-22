@@ -214,12 +214,7 @@ export default function RefundsPage() {
                         </span>
                       </td>
                       <td className="px-6 py-4.5 text-right whitespace-nowrap">
-                        <div className="flex flex-col items-end">
-                          <span className="font-bold text-slate-900">${refund.amountUsd.toLocaleString()} USD</span>
-                          <span className="text-[11px] font-bold text-slate-400 mt-0.5">
-                            {Math.round(refund.amountCdf).toLocaleString('fr-FR')} FC
-                          </span>
-                        </div>
+                        <span className="font-bold text-slate-900">${refund.amountUsd.toLocaleString()} USD</span>
                       </td>
                     </tr>
                   );

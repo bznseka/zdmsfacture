@@ -1,7 +1,7 @@
 {
   "name": "zdmsFacture — Facturation Premium",
   "short_name": "zdmsFacture",
-  "description": "Solution SaaS moderne de facturation multidevise pour entreprises en Afrique.",
+  "description": "Solution SaaS moderne de facturation pour entreprises internationales.",
   "start_url": "/overview",
   "scope": "/",
   "display": "standalone",

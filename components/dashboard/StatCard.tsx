@@ -4,7 +4,7 @@ import { LucideIcon } from 'lucide-react';
 interface StatCardProps {
   title: string;
   valueUsd: string;
-  valueCdf: string;
+  subtitle?: string;
   growth?: {
     value: number;
     isPositive: boolean;
@@ -17,7 +17,7 @@ interface StatCardProps {
 export default function StatCard({
   title,
   valueUsd,
-  valueCdf,
+  subtitle,
   growth,
   icon: Icon,
   iconBgColor,
@@ -36,9 +36,11 @@ export default function StatCard({
         <h3 className="text-2xl font-bold text-slate-900 tracking-tight">
           {valueUsd}
         </h3>
-        <p className="text-xs font-semibold text-slate-400">
-          {valueCdf}
-        </p>
+        {subtitle && (
+          <p className="text-xs font-semibold text-slate-400">
+            {subtitle}
+          </p>
+        )}
       </div>
 
       {growth && (

@@ -88,16 +88,11 @@ export default function InvoiceTable({ invoices }: InvoiceTableProps) {
                       {label}
                     </span>
                   </td>
-                  {/* Amount in dual currencies */}
+                  {/* Amount */}
                   <td className="px-6 py-4.5 text-right whitespace-nowrap">
-                    <div className="flex flex-col items-end">
-                      <span className="font-bold text-slate-900">
-                        ${invoice.totalUsd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                      </span>
-                      <span className="text-[11px] font-bold text-slate-400 mt-0.5">
-                        {Math.round(invoice.totalCdf).toLocaleString('fr-FR')} FC
-                      </span>
-                    </div>
+                    <span className="font-bold text-slate-900">
+                      ${invoice.totalUsd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </span>
                   </td>
                   {/* Actions */}
                   <td className="px-6 py-4.5 whitespace-nowrap">

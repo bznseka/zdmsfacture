@@ -13,35 +13,32 @@ interface AppContextType {
   settings: CompanySettings;
   payments: Payment[];
   refunds: Refund[];
-  exchangeRate: number;
   loading: boolean;
   user: SessionUser | null;
   authLoading: boolean;
   addClient: (client: Omit<Client, 'id'>) => Promise<Client>;
   updateClient: (id: string, updatedClient: Partial<Client>) => Promise<void>;
   deleteClient: (id: string) => Promise<void>;
-  addInvoice: (invoice: Omit<Invoice, 'id' | 'invoiceNumber' | 'totalUsd' | 'totalCdf' | 'taxAmount' | 'subtotal' | 'exchangeRate'>) => Promise<Invoice>;
+  addInvoice: (invoice: Omit<Invoice, 'id' | 'invoiceNumber' | 'totalUsd' | 'taxAmount' | 'subtotal'>) => Promise<Invoice>;
   updateInvoice: (id: string, updatedInvoice: Partial<Invoice>) => Promise<void>;
   deleteInvoice: (id: string) => Promise<void>;
   updateInvoiceStatus: (id: string, status: InvoiceStatus) => Promise<void>;
   getNextInvoiceNumber: () => string;
   updateSettings: (newSettings: Partial<CompanySettings>) => Promise<void>;
-  addPayment: (payment: Omit<Payment, 'id' | 'invoiceNumber' | 'clientName' | 'amountCdf'>) => Promise<Payment>;
-  addRefund: (refund: Omit<Refund, 'id' | 'invoiceNumber' | 'clientName' | 'amountCdf'>) => Promise<Refund>;
+  addPayment: (payment: Omit<Payment, 'id' | 'invoiceNumber' | 'clientName'>) => Promise<Payment>;
+  addRefund: (refund: Omit<Refund, 'id' | 'invoiceNumber' | 'clientName'>) => Promise<Refund>;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 const DEFAULT_SETTINGS: CompanySettings = {
-  companyName: 'Bruno Z. Consulting',
-  email: 'contact@bruno.cd',
-  phone: '+243 812 345 678',
-  address: 'Gombe, Kinshasa, République Démocratique du Congo',
-  taxNumber: 'CD/KIN/RCCM/26-B-0042',
-  currency: 'USD',
+  companyName: 'Ma Société',
+  email: '',
+  phone: '',
+  address: '',
+  taxNumber: '',
   taxRate: 18,
-  exchangeRate: 2800,
-  mobileMoneyDetails: 'M-Pesa: +243 812 345 678 | Orange Money: +243 897 111 222',
+  mobileMoneyDetails: '',
 };
 
 // Helper date conversions
@@ -76,8 +73,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [refunds, setRefunds] = useState<Refund[]>([]);
   const [loading, setLoading] = useState(true);
   const [settings, setSettings] = useState<CompanySettings>(DEFAULT_SETTINGS);
-
-  const exchangeRate = settings.exchangeRate;
 
   const fetchData = async () => {
     try {
@@ -172,7 +167,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         email: newClientData.email,
         phone: newClientData.phone,
         address: newClientData.address,
-        country: newClientData.country || 'CD',
+        country: newClientData.country || '',
       }),
     });
 
@@ -212,7 +207,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   };
 
   // INVOICES CRUD
-  const addInvoice = async (invoiceData: Omit<Invoice, 'id' | 'invoiceNumber' | 'totalUsd' | 'totalCdf' | 'taxAmount' | 'subtotal' | 'exchangeRate'>) => {
+  const addInvoice = async (invoiceData: Omit<Invoice, 'id' | 'invoiceNumber' | 'totalUsd' | 'taxAmount' | 'subtotal'>) => {
     let calculatedSubtotal = 0;
     if (invoiceData.items) {
       calculatedSubtotal = invoiceData.items.reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0);
@@ -221,7 +216,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     const subtotal = Math.round(calculatedSubtotal);
     const taxAmount = Math.round(subtotal * (invoiceData.taxRate / 100));
     const totalUsd = subtotal + taxAmount;
-    const totalCdf = totalUsd * exchangeRate;
     const invoiceNumber = getNextInvoiceNumber();
 
     const created = await apiFetch<{ id: string; items: Invoice['items'] }>('/api/invoices', {
@@ -236,8 +230,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         taxRate: invoiceData.taxRate,
         taxAmount,
         totalUsd,
-        totalCdf,
-        exchangeRate,
         notes: invoiceData.notes || '',
         items: invoiceData.items || [],
       }),
@@ -250,8 +242,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       subtotal,
       taxAmount,
       totalUsd,
-      totalCdf,
-      exchangeRate,
       items: created.items,
     };
 
@@ -263,7 +253,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     let subtotal = updatedData.subtotal;
     let taxAmount = updatedData.taxAmount;
     let totalUsd = updatedData.totalUsd;
-    let totalCdf = updatedData.totalCdf;
 
     const existingInvoice = invoices.find(inv => inv.id === id);
     if (!existingInvoice) return;
@@ -276,7 +265,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       subtotal = Math.round(calculatedSubtotal);
       taxAmount = Math.round(subtotal * (mergedTaxRate / 100));
       totalUsd = subtotal + taxAmount;
-      totalCdf = totalUsd * existingInvoice.exchangeRate;
     }
 
     const updated = await apiFetch<any>(`/api/invoices/${id}`, {
@@ -290,7 +278,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         taxRate: mergedTaxRate,
         taxAmount,
         totalUsd,
-        totalCdf,
         notes: updatedData.notes,
         items: updatedData.items,
       }),
@@ -331,9 +318,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         phone: newSettings.phone,
         address: newSettings.address,
         taxNumber: newSettings.taxNumber,
-        currency: newSettings.currency,
         taxRate: newSettings.taxRate,
-        exchangeRate: newSettings.exchangeRate,
         mobileMoneyDetails: newSettings.mobileMoneyDetails,
       }),
     });
@@ -342,18 +327,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   };
 
   // PAYMENTS CRUD
-  const addPayment = async (paymentData: Omit<Payment, 'id' | 'invoiceNumber' | 'clientName' | 'amountCdf'>) => {
+  const addPayment = async (paymentData: Omit<Payment, 'id' | 'invoiceNumber' | 'clientName'>) => {
     const linkedInvoice = invoices.find(inv => inv.id === paymentData.invoiceId);
     if (!linkedInvoice) throw new Error('Invoice not found');
-
-    const amountCdf = paymentData.amountUsd * exchangeRate;
 
     const created = await apiFetch<any>('/api/payments', {
       method: 'POST',
       body: JSON.stringify({
         invoiceId: paymentData.invoiceId,
         amountUsd: paymentData.amountUsd,
-        amountCdf,
         method: paymentData.method,
         reference: paymentData.reference,
         date: convertFrenchDateToDb(paymentData.date),
@@ -373,18 +355,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   };
 
   // REFUNDS CRUD
-  const addRefund = async (refundData: Omit<Refund, 'id' | 'invoiceNumber' | 'clientName' | 'amountCdf'>) => {
+  const addRefund = async (refundData: Omit<Refund, 'id' | 'invoiceNumber' | 'clientName'>) => {
     const linkedInvoice = invoices.find(inv => inv.id === refundData.invoiceId);
     if (!linkedInvoice) throw new Error('Invoice not found');
-
-    const amountCdf = refundData.amountUsd * exchangeRate;
 
     const created = await apiFetch<any>('/api/refunds', {
       method: 'POST',
       body: JSON.stringify({
         invoiceId: refundData.invoiceId,
         amountUsd: refundData.amountUsd,
-        amountCdf,
         status: refundData.status || 'pending',
         reason: refundData.reason,
         date: convertFrenchDateToDb(refundData.date),
@@ -404,7 +383,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       settings,
       payments,
       refunds,
-      exchangeRate,
       loading,
       user,
       authLoading,
