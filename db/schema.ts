@@ -19,6 +19,8 @@ export const users = pgTable(
     passwordHash: text("password_hash").notNull(),
     role: text("role").notNull().default("user"),
     status: text("status").notNull().default("active"),
+    resetToken: text("reset_token").unique(),
+    resetTokenExpiresAt: timestamp("reset_token_expires_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [
@@ -133,6 +135,7 @@ export const settings = pgTable("settings", {
   taxNumber: text("tax_number"),
   taxRate: numeric("tax_rate").notNull().default("18"),
   mobileMoneyDetails: text("mobile_money_details"),
+  logoUrl: text("logo_url"),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
 });
 

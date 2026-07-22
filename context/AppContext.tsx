@@ -25,6 +25,7 @@ interface AppContextType {
   updateInvoiceStatus: (id: string, status: InvoiceStatus) => Promise<void>;
   getNextInvoiceNumber: () => string;
   updateSettings: (newSettings: Partial<CompanySettings>) => Promise<void>;
+  setLogoUrl: (logoUrl: string) => void;
   addPayment: (payment: Omit<Payment, 'id' | 'invoiceNumber' | 'clientName'>) => Promise<Payment>;
   addRefund: (refund: Omit<Refund, 'id' | 'invoiceNumber' | 'clientName'>) => Promise<Refund>;
 }
@@ -39,6 +40,7 @@ const DEFAULT_SETTINGS: CompanySettings = {
   taxNumber: '',
   taxRate: 18,
   mobileMoneyDetails: '',
+  logoUrl: '',
 };
 
 // Helper date conversions
@@ -326,6 +328,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setSettings(updated);
   };
 
+  const setLogoUrl = (logoUrl: string) => {
+    setSettings(prev => ({ ...prev, logoUrl }));
+  };
+
   // PAYMENTS CRUD
   const addPayment = async (paymentData: Omit<Payment, 'id' | 'invoiceNumber' | 'clientName'>) => {
     const linkedInvoice = invoices.find(inv => inv.id === paymentData.invoiceId);
@@ -395,6 +401,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       updateInvoiceStatus,
       getNextInvoiceNumber,
       updateSettings,
+      setLogoUrl,
       addPayment,
       addRefund
     }}>

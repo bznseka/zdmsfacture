@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, Suspense } from 'react';
+import Link from 'next/link';
 import { useApp } from '@/context/AppContext';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { signIn } from 'next-auth/react';
@@ -353,6 +354,13 @@ function LoginForm() {
                 )}
               </button>
             </div>
+            {!isSignUp && (
+              <div className="text-right">
+                <Link href="/forgot-password" className="text-xs font-semibold text-primary hover:text-primary-hover transition-colors">
+                  Mot de passe oublié ?
+                </Link>
+              </div>
+            )}
           </div>
 
           {/* Confirm Password input (only for sign up) */}

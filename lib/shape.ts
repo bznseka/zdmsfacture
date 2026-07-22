@@ -135,6 +135,7 @@ export function shapeSettings(row: {
   taxNumber: string | null;
   taxRate: string;
   mobileMoneyDetails: string | null;
+  logoUrl: string | null;
 }) {
   return {
     companyName: row.companyName,
@@ -144,5 +145,6 @@ export function shapeSettings(row: {
     taxNumber: row.taxNumber || "",
     taxRate: Number(row.taxRate),
     mobileMoneyDetails: row.mobileMoneyDetails || "",
+    logoUrl: row.logoUrl || "",
   };
 }

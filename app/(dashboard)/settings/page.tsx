@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Save, Sparkles, Building2, Landmark, RefreshCw } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Save, Sparkles, Building2, Landmark, RefreshCw, Image as ImageIcon, Trash2, Loader2, AlertCircle } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
 
 interface SettingsData {
@@ -25,9 +25,54 @@ const DEFAULT_FORM_DATA: SettingsData = {
 };
 
 export default function SettingsPage() {
-  const { settings, updateSettings, loading } = useApp();
+  const { settings, updateSettings, setLogoUrl, loading } = useApp();
 
   const [formData, setFormData] = useState<SettingsData>(DEFAULT_FORM_DATA);
+  const [logoUploading, setLogoUploading] = useState(false);
+  const [logoError, setLogoError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleLogoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setLogoError(null);
+    setLogoUploading(true);
+    try {
+      const body = new FormData();
+      body.append('file', file);
+      const res = await fetch('/api/settings/logo', { method: 'POST', body });
+      const data = await res.json();
+      if (!res.ok) {
+        setLogoError(data.error || "Erreur lors de l'envoi du logo.");
+        return;
+      }
+      setLogoUrl(data.logoUrl);
+    } catch {
+      setLogoError('Erreur réseau. Veuillez réessayer.');
+    } finally {
+      setLogoUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
+  const handleLogoRemove = async () => {
+    if (!confirm('Supprimer le logo actuel ?')) return;
+    setLogoError(null);
+    setLogoUploading(true);
+    try {
+      const res = await fetch('/api/settings/logo', { method: 'DELETE' });
+      if (!res.ok) {
+        const data = await res.json();
+        setLogoError(data.error || 'Erreur lors de la suppression.');
+        return;
+      }
+      setLogoUrl('');
+    } catch {
+      setLogoError('Erreur réseau. Veuillez réessayer.');
+    } finally {
+      setLogoUploading(false);
+    }
+  };
 
   // Sync with settings context when loaded
   useEffect(() => {
@@ -86,7 +131,64 @@ export default function SettingsPage() {
         
         {/* LEFT & CENTER PANEL: GENERAL & BILLING CONFIG */}
         <div className="lg:col-span-2 space-y-6 animate-fade-in-up opacity-0 [animation-fill-mode:forwards] [animation-delay:200ms]">
-          
+
+          {/* Logo */}
+          <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-4">
+            <h3 className="text-base font-bold text-slate-900 border-b border-slate-50 pb-3 flex items-center gap-2">
+              <ImageIcon className="w-5 h-5 text-primary" />
+              <span>Logo de l&apos;entreprise</span>
+            </h3>
+
+            <div className="flex items-center gap-5">
+              <div className="w-20 h-20 rounded-2xl border border-slate-200 bg-slate-50 flex items-center justify-center overflow-hidden flex-shrink-0">
+                {settings.logoUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={settings.logoUrl} alt="Logo" className="w-full h-full object-contain" />
+                ) : (
+                  <Building2 className="w-8 h-8 text-slate-300" />
+                )}
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                  onChange={handleLogoChange}
+                  className="hidden"
+                  id="logo-upload"
+                />
+                <div className="flex gap-2">
+                  <label
+                    htmlFor="logo-upload"
+                    className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl cursor-pointer transition-colors"
+                  >
+                    {logoUploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ImageIcon className="w-3.5 h-3.5" />}
+                    <span>{settings.logoUrl ? 'Changer le logo' : 'Ajouter un logo'}</span>
+                  </label>
+                  {settings.logoUrl && (
+                    <button
+                      type="button"
+                      onClick={handleLogoRemove}
+                      disabled={logoUploading}
+                      className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-rose-600 hover:bg-rose-50 rounded-xl transition-colors disabled:opacity-50"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+                <p className="text-[11px] text-slate-400 font-medium">PNG, JPEG, WEBP ou SVG — 2 Mo maximum.</p>
+              </div>
+            </div>
+
+            {logoError && (
+              <div className="flex items-start gap-2 bg-rose-50 border border-rose-100 rounded-xl p-3 text-xs font-semibold text-rose-700">
+                <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                {logoError}
+              </div>
+            )}
+          </div>
+
           {/* Company Identity */}
           <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-6">
             <h3 className="text-base font-bold text-slate-900 border-b border-slate-50 pb-3 flex items-center gap-2">

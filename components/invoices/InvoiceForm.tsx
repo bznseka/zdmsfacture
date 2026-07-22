@@ -388,7 +388,12 @@ export default function InvoiceForm({ initialInvoice, isEditing = false }: Invoi
                 </span>
               </div>
               <div className="text-right">
-                <span className="text-sm font-black text-primary block">zdmsFacture</span>
+                {settings.logoUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={settings.logoUrl} alt={settings.companyName} className="h-8 sm:h-10 object-contain ml-auto" />
+                ) : (
+                  <span className="text-sm font-black text-primary block">zdmsFacture</span>
+                )}
               </div>
             </div>
 

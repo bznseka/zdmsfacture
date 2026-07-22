@@ -40,6 +40,7 @@ export interface CompanySettings {
   taxNumber: string;
   taxRate: number;
   mobileMoneyDetails: string;
+  logoUrl: string;
 }
 
 export interface Payment {
