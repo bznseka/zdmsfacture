@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { auth } from "@/auth";
-import { signOut } from "@/auth";
-import { ShieldCheck, Users, LogOut } from "lucide-react";
+import { ShieldCheck, Users } from "lucide-react";
+import AdminLogoutButton from "@/components/admin/AdminLogoutButton";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -23,20 +23,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               <Users className="w-4 h-4" />
               <span>Utilisateurs</span>
             </Link>
-            <form
-              action={async () => {
-                "use server";
-                await signOut({ redirectTo: "/login" });
-              }}
-            >
-              <button
-                type="submit"
-                className="flex items-center gap-1.5 hover:text-rose-400 transition-colors"
-              >
-                <LogOut className="w-4 h-4" />
-                <span>Déconnexion</span>
-              </button>
-            </form>
+            <AdminLogoutButton />
           </div>
         </div>
       </header>
