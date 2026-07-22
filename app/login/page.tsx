@@ -11,11 +11,24 @@ function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  const callbackUrl = searchParams.get('callbackUrl');
   const planParam = searchParams.get('plan');
   const billingParam = searchParams.get('billing') || 'monthly';
-  const redirectAfterAuth = planParam
-    ? `/subscriptions?plan=${planParam}&billing=${billingParam}`
-    : '/overview';
+
+  function getSafeCallbackPath(): string | null {
+    if (!callbackUrl || typeof window === 'undefined') return null;
+    try {
+      const url = new URL(callbackUrl, window.location.origin);
+      if (url.origin !== window.location.origin) return null;
+      return `${url.pathname}${url.search}`;
+    } catch {
+      return null;
+    }
+  }
+
+  const redirectAfterAuth =
+    getSafeCallbackPath() ||
+    (planParam ? `/subscriptions?plan=${planParam}&billing=${billingParam}` : '/overview');
 
   const [isSignUp, setIsSignUp] = useState(!!searchParams.get('mode'));
   const [email, setEmail] = useState('');
