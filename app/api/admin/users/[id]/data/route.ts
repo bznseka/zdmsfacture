@@ -33,10 +33,10 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
       clients: clientRows.map(shapeClient),
       invoices: invoiceRows.map((row) => shapeInvoice(row, row.client, row.items)),
       payments: paymentRows.map((row) =>
-        shapePayment(row, row.invoice?.invoiceNumber, row.invoice?.client?.name)
+        shapePayment(row, row.invoice?.invoiceNumber, row.invoice?.client?.name, row.invoice?.currency)
       ),
       refunds: refundRows.map((row) =>
-        shapeRefund(row, row.invoice?.invoiceNumber, row.invoice?.client?.name)
+        shapeRefund(row, row.invoice?.invoiceNumber, row.invoice?.client?.name, row.invoice?.currency)
       ),
     });
   } catch (error) {

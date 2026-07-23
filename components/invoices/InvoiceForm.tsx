@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useApp } from '@/context/AppContext';
 import { Invoice, LineItem, InvoiceStatus } from '@/types';
+import { CURRENCIES, Currency, formatCurrency } from '@/lib/currency';
 import { Plus, Trash2, ArrowLeft, Save, Send, Eye, Check, Download, X } from 'lucide-react';
 
 interface InvoiceFormProps {
@@ -54,6 +55,7 @@ export default function InvoiceForm({ initialInvoice, isEditing = false }: Invoi
   ]);
 
   const [notes, setNotes] = useState<string>(initialInvoice?.notes || '');
+  const [currency, setCurrency] = useState<Currency>(initialInvoice?.currency || settings.currency || 'USD');
   const [invoiceNumber, setInvoiceNumber] = useState<string>('');
   const [createdInvoiceId, setCreatedInvoiceId] = useState<string | null>(null);
   const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false);
@@ -152,6 +154,7 @@ export default function InvoiceForm({ initialInvoice, isEditing = false }: Invoi
       dueDate: convertYmdToFrenchDate(dueDate),
       items: formattedItems,
       taxRate,
+      currency,
       notes,
     };
 
@@ -218,6 +221,28 @@ export default function InvoiceForm({ initialInvoice, isEditing = false }: Invoi
                     <option key={c.id} value={c.id}>{c.name} ({c.email})</option>
                   ))}
                 </select>
+              </div>
+
+              {/* Currency Selector */}
+              <div>
+                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+                  Devise de la facture
+                </label>
+                <select
+                  value={currency}
+                  disabled={isEditing}
+                  onChange={(e) => setCurrency(e.target.value as Currency)}
+                  className="w-full h-11 px-4 text-sm bg-slate-50 border border-slate-200/80 rounded-xl focus:outline-none focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                  {CURRENCIES.map(c => (
+                    <option key={c.value} value={c.value}>{c.label}</option>
+                  ))}
+                </select>
+                {isEditing && (
+                  <p className="text-[11px] text-slate-400 font-medium mt-1.5">
+                    La devise ne peut plus être modifiée après la création de la facture.
+                  </p>
+                )}
               </div>
 
               {/* Dates */}
@@ -298,11 +323,11 @@ export default function InvoiceForm({ initialInvoice, isEditing = false }: Invoi
                   {/* Unit Price */}
                   <div className="w-full sm:w-32">
                     <label className="block sm:hidden text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
-                      P.U. ($)
+                      P.U.
                     </label>
                     <input
                       type="number"
-                      placeholder="P.U. ($)"
+                      placeholder="Prix unitaire"
                       min="0"
                       value={item.unitPrice === 0 ? '' : item.unitPrice}
                       onChange={(e) => handleItemFieldChange(item.id, 'unitPrice', e.target.value)}
@@ -314,7 +339,7 @@ export default function InvoiceForm({ initialInvoice, isEditing = false }: Invoi
                   <div className="w-full sm:w-24 text-right pr-2 hidden sm:block">
                     <span className="block text-xs text-slate-400 font-medium">Total Ligne</span>
                     <span className="block text-sm font-bold text-slate-700 mt-1">
-                      ${Math.round(item.quantity * item.unitPrice).toLocaleString()} USD
+                      {formatCurrency(Math.round(item.quantity * item.unitPrice), currency)}
                     </span>
                   </div>
 
@@ -453,8 +478,8 @@ export default function InvoiceForm({ initialInvoice, isEditing = false }: Invoi
                         {item.description || <span className="text-slate-300 italic font-semibold">Description article...</span>}
                       </td>
                       <td className="py-2.5 text-center font-semibold">{item.quantity}</td>
-                      <td className="py-2.5 text-right font-semibold">${Math.round(item.unitPrice).toLocaleString()}</td>
-                      <td className="py-2.5 text-right font-bold text-slate-900">${Math.round(item.quantity * item.unitPrice).toLocaleString()}</td>
+                      <td className="py-2.5 text-right font-semibold">{formatCurrency(Math.round(item.unitPrice), currency)}</td>
+                      <td className="py-2.5 text-right font-bold text-slate-900">{formatCurrency(Math.round(item.quantity * item.unitPrice), currency)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -466,15 +491,15 @@ export default function InvoiceForm({ initialInvoice, isEditing = false }: Invoi
               <div className="w-64 space-y-2 text-xs">
                 <div className="flex justify-between text-slate-500 font-medium">
                   <span>Sous-total</span>
-                  <span className="font-bold text-slate-700">${subtotal.toLocaleString()} USD</span>
+                  <span className="font-bold text-slate-700">{formatCurrency(subtotal, currency)}</span>
                 </div>
                 <div className="flex justify-between text-slate-500 font-medium">
                   <span>TVA (18%)</span>
-                  <span className="font-bold text-slate-700">${taxAmount.toLocaleString()} USD</span>
+                  <span className="font-bold text-slate-700">{formatCurrency(taxAmount, currency)}</span>
                 </div>
                 <div className="flex justify-between items-center text-sm border-t border-slate-100 pt-2.5">
-                  <span className="font-bold text-slate-900">Total Net (USD)</span>
-                  <span className="text-base font-black text-primary">${totalUsd.toLocaleString()} USD</span>
+                  <span className="font-bold text-slate-900">Total Net</span>
+                  <span className="text-base font-black text-primary">{formatCurrency(totalUsd, currency)}</span>
                 </div>
               </div>
             </div>

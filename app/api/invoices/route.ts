@@ -40,6 +40,7 @@ export async function POST(request: Request) {
           taxRate: String(body.taxRate ?? 18),
           taxAmount: String(body.taxAmount ?? 0),
           totalUsd: String(body.totalUsd ?? 0),
+          currency: body.currency || "USD",
           notes: body.notes || "",
           userId,
         })

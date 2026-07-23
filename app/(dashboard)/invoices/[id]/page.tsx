@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useApp } from '@/context/AppContext';
 import { ArrowLeft, Edit, Trash2, Download, AlertCircle, RefreshCw, FileText } from 'lucide-react';
 import { InvoiceStatus } from '@/types';
+import { formatCurrency } from '@/lib/currency';
 
 export default function InvoiceDetailPage() {
   const params = useParams();
@@ -200,8 +201,8 @@ export default function InvoiceDetailPage() {
                     <tr key={item.id}>
                       <td className="py-3 pr-2 font-medium">{item.description}</td>
                       <td className="py-3 text-center font-semibold">{item.quantity}</td>
-                      <td className="py-3 text-right font-semibold">${item.unitPrice.toLocaleString()}</td>
-                      <td className="py-3 text-right font-bold text-slate-900">${item.total.toLocaleString()}</td>
+                      <td className="py-3 text-right font-semibold">{formatCurrency(item.unitPrice, invoice.currency)}</td>
+                      <td className="py-3 text-right font-bold text-slate-900">{formatCurrency(item.total, invoice.currency)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -213,15 +214,15 @@ export default function InvoiceDetailPage() {
               <div className="w-64 space-y-2 text-xs">
                 <div className="flex justify-between text-slate-500 font-medium">
                   <span>Sous-total</span>
-                  <span className="font-bold text-slate-700">${invoice.subtotal.toLocaleString()} USD</span>
+                  <span className="font-bold text-slate-700">{formatCurrency(invoice.subtotal, invoice.currency)}</span>
                 </div>
                 <div className="flex justify-between text-slate-500 font-medium">
                   <span>TVA ({invoice.taxRate}%)</span>
-                  <span className="font-bold text-slate-700">${invoice.taxAmount.toLocaleString()} USD</span>
+                  <span className="font-bold text-slate-700">{formatCurrency(invoice.taxAmount, invoice.currency)}</span>
                 </div>
                 <div className="flex justify-between items-center text-sm border-t border-slate-100 pt-2.5">
-                  <span className="font-bold text-slate-900">Total Net (USD)</span>
-                  <span className="text-base font-black text-primary">${invoice.totalUsd.toLocaleString()} USD</span>
+                  <span className="font-bold text-slate-900">Total Net</span>
+                  <span className="text-base font-black text-primary">{formatCurrency(invoice.totalUsd, invoice.currency)}</span>
                 </div>
               </div>
             </div>

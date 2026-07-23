@@ -55,6 +55,7 @@ export const invoices = pgTable(
     taxRate: numeric("tax_rate").notNull().default("18"),
     taxAmount: numeric("tax_amount").notNull().default("0"),
     totalUsd: numeric("total_usd").notNull().default("0"),
+    currency: text("currency").notNull().default("USD"),
     notes: text("notes"),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
     userId: uuid("user_id")
@@ -67,6 +68,7 @@ export const invoices = pgTable(
       "invoices_status_check",
       sql`${table.status} in ('draft','sent','paid','overdue')`
     ),
+    check("invoices_currency_check", sql`${table.currency} in ('USD','EUR')`),
   ]
 );
 
@@ -136,8 +138,11 @@ export const settings = pgTable("settings", {
   taxRate: numeric("tax_rate").notNull().default("18"),
   mobileMoneyDetails: text("mobile_money_details"),
   logoUrl: text("logo_url"),
+  currency: text("currency").notNull().default("USD"),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
-});
+}, (table) => [
+  check("settings_currency_check", sql`${table.currency} in ('USD','EUR')`),
+]);
 
 export const pendingPayments = pgTable(
   "pending_payments",

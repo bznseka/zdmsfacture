@@ -26,8 +26,8 @@ interface AppContextType {
   getNextInvoiceNumber: () => string;
   updateSettings: (newSettings: Partial<CompanySettings>) => Promise<void>;
   setLogoUrl: (logoUrl: string) => void;
-  addPayment: (payment: Omit<Payment, 'id' | 'invoiceNumber' | 'clientName'>) => Promise<Payment>;
-  addRefund: (refund: Omit<Refund, 'id' | 'invoiceNumber' | 'clientName'>) => Promise<Refund>;
+  addPayment: (payment: Omit<Payment, 'id' | 'invoiceNumber' | 'clientName' | 'currency'>) => Promise<Payment>;
+  addRefund: (refund: Omit<Refund, 'id' | 'invoiceNumber' | 'clientName' | 'currency'>) => Promise<Refund>;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -41,6 +41,7 @@ const DEFAULT_SETTINGS: CompanySettings = {
   taxRate: 18,
   mobileMoneyDetails: '',
   logoUrl: '',
+  currency: 'USD',
 };
 
 // Helper date conversions
@@ -232,6 +233,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         taxRate: invoiceData.taxRate,
         taxAmount,
         totalUsd,
+        currency: invoiceData.currency,
         notes: invoiceData.notes || '',
         items: invoiceData.items || [],
       }),
@@ -322,6 +324,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         taxNumber: newSettings.taxNumber,
         taxRate: newSettings.taxRate,
         mobileMoneyDetails: newSettings.mobileMoneyDetails,
+        currency: newSettings.currency,
       }),
     });
 
@@ -333,7 +336,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   };
 
   // PAYMENTS CRUD
-  const addPayment = async (paymentData: Omit<Payment, 'id' | 'invoiceNumber' | 'clientName'>) => {
+  const addPayment = async (paymentData: Omit<Payment, 'id' | 'invoiceNumber' | 'clientName' | 'currency'>) => {
     const linkedInvoice = invoices.find(inv => inv.id === paymentData.invoiceId);
     if (!linkedInvoice) throw new Error('Invoice not found');
 
@@ -361,7 +364,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   };
 
   // REFUNDS CRUD
-  const addRefund = async (refundData: Omit<Refund, 'id' | 'invoiceNumber' | 'clientName'>) => {
+  const addRefund = async (refundData: Omit<Refund, 'id' | 'invoiceNumber' | 'clientName' | 'currency'>) => {
     const linkedInvoice = invoices.find(inv => inv.id === refundData.invoiceId);
     if (!linkedInvoice) throw new Error('Invoice not found');
 

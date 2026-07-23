@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Save, Sparkles, Building2, Landmark, RefreshCw, Image as ImageIcon, Trash2, Loader2, AlertCircle } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
+import { CURRENCIES, Currency } from '@/lib/currency';
 
 interface SettingsData {
   companyName: string;
@@ -12,6 +13,7 @@ interface SettingsData {
   taxNumber: string;
   taxRate: number;
   mobileMoneyDetails: string;
+  currency: Currency;
 }
 
 const DEFAULT_FORM_DATA: SettingsData = {
@@ -22,6 +24,7 @@ const DEFAULT_FORM_DATA: SettingsData = {
   taxNumber: '',
   taxRate: 18,
   mobileMoneyDetails: '',
+  currency: 'USD',
 };
 
 export default function SettingsPage() {
@@ -282,7 +285,25 @@ export default function SettingsPage() {
                   className="w-full h-11 px-4 text-sm bg-slate-50 border border-slate-200/80 rounded-xl focus:outline-none focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all duration-200"
                 />
               </div>
+
+              <div>
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">
+                  Devise par défaut
+                </label>
+                <select
+                  value={formData.currency}
+                  onChange={(e) => setFormData(prev => ({ ...prev, currency: e.target.value as Currency }))}
+                  className="w-full h-11 px-4 text-sm bg-slate-50 border border-slate-200/80 rounded-xl focus:outline-none focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all duration-200"
+                >
+                  {CURRENCIES.map(c => (
+                    <option key={c.value} value={c.value}>{c.label}</option>
+                  ))}
+                </select>
+              </div>
             </div>
+            <p className="text-[11px] text-slate-400 font-medium">
+              Devise proposée par défaut à la création d&apos;une nouvelle facture. Vous pouvez toujours choisir l&apos;autre devise facture par facture.
+            </p>
           </div>
 
           {/* Payment Terms Details */}

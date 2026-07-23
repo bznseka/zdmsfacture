@@ -1,9 +1,10 @@
 import React from 'react';
+import { Currency, formatCurrencyTotals } from '@/lib/currency';
 
 interface TopClientItem {
   id: string;
   name: string;
-  totalUsd: number;
+  totals: Partial<Record<Currency, number>>;
   invoicesCount: number;
   initials: string;
 }
@@ -52,7 +53,7 @@ export default function TopClients({ clients }: TopClientsProps) {
               {/* Billed totals */}
               <div className="text-right">
                 <span className="block text-sm font-bold text-slate-900">
-                  ${client.totalUsd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  {formatCurrencyTotals(client.totals)}
                 </span>
               </div>
             </div>

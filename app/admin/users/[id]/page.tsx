@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft, Save, Loader2, FileText, Wallet, Users2, CheckCircle2 } from 'lucide-react';
 import { apiFetch } from '@/lib/api-client';
 import { Client, Invoice, Payment, Refund } from '@/types';
+import { Currency, formatCurrency, formatCurrencyTotals } from '@/lib/currency';
 import AdminStatCard from '@/components/admin/AdminStatCard';
 import InvoiceStatusChart from '@/components/admin/InvoiceStatusChart';
 
@@ -151,14 +152,24 @@ export default function AdminUserDetailPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
           <AdminStatCard
             title="Facturé (total)"
-            value={`$${data.invoices.reduce((sum, inv) => sum + inv.totalUsd, 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}`}
+            value={formatCurrencyTotals(
+              data.invoices.reduce((totals: Partial<Record<Currency, number>>, inv) => {
+                totals[inv.currency] = (totals[inv.currency] || 0) + inv.totalUsd;
+                return totals;
+              }, {})
+            )}
             icon={FileText}
             iconBgColor="bg-blue-50"
             iconTextColor="text-blue-600"
           />
           <AdminStatCard
             title="Encaissé (payé)"
-            value={`$${data.invoices.filter((inv) => inv.status === 'paid').reduce((sum, inv) => sum + inv.totalUsd, 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}`}
+            value={formatCurrencyTotals(
+              data.invoices.filter((inv) => inv.status === 'paid').reduce((totals: Partial<Record<Currency, number>>, inv) => {
+                totals[inv.currency] = (totals[inv.currency] || 0) + inv.totalUsd;
+                return totals;
+              }, {})
+            )}
             icon={CheckCircle2}
             iconBgColor="bg-emerald-50"
             iconTextColor="text-emerald-600"
@@ -319,7 +330,7 @@ export default function AdminUserDetailPage() {
               {data.invoices.map((inv) => (
                 <div key={inv.id} className="text-sm flex justify-between border-b border-slate-50 pb-2">
                   <span className="font-semibold text-slate-700">{inv.invoiceNumber}</span>
-                  <span className="text-slate-400">${inv.totalUsd.toLocaleString()} · {inv.status}</span>
+                  <span className="text-slate-400">{formatCurrency(inv.totalUsd, inv.currency)} · {inv.status}</span>
                 </div>
               ))}
               {data.invoices.length === 0 && <p className="text-xs text-slate-400">Aucune facture.</p>}
@@ -332,7 +343,7 @@ export default function AdminUserDetailPage() {
               {data.payments.map((p) => (
                 <div key={p.id} className="text-sm flex justify-between border-b border-slate-50 pb-2">
                   <span className="font-semibold text-slate-700">{p.invoiceNumber}</span>
-                  <span className="text-slate-400">${p.amountUsd.toLocaleString()} · {p.method}</span>
+                  <span className="text-slate-400">{formatCurrency(p.amountUsd, p.currency)} · {p.method}</span>
                 </div>
               ))}
               {data.payments.length === 0 && <p className="text-xs text-slate-400">Aucun paiement.</p>}
@@ -345,7 +356,7 @@ export default function AdminUserDetailPage() {
               {data.refunds.map((r) => (
                 <div key={r.id} className="text-sm flex justify-between border-b border-slate-50 pb-2">
                   <span className="font-semibold text-slate-700">{r.invoiceNumber}</span>
-                  <span className="text-slate-400">${r.amountUsd.toLocaleString()} · {r.status}</span>
+                  <span className="text-slate-400">{formatCurrency(r.amountUsd, r.currency)} · {r.status}</span>
                 </div>
               ))}
               {data.refunds.length === 0 && <p className="text-xs text-slate-400">Aucun remboursement.</p>}

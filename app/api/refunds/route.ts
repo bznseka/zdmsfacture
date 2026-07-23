@@ -15,7 +15,9 @@ export async function GET() {
     });
 
     return NextResponse.json(
-      rows.map((row) => shapeRefund(row, row.invoice?.invoiceNumber, row.invoice?.client?.name))
+      rows.map((row) =>
+        shapeRefund(row, row.invoice?.invoiceNumber, row.invoice?.client?.name, row.invoice?.currency)
+      )
     );
   } catch (error) {
     return apiErrorResponse(error);
@@ -47,9 +49,10 @@ export async function POST(request: Request) {
       })
       .returning();
 
-    return NextResponse.json(shapeRefund(row, invoice.invoiceNumber, invoice.client?.name), {
-      status: 201,
-    });
+    return NextResponse.json(
+      shapeRefund(row, invoice.invoiceNumber, invoice.client?.name, invoice.currency),
+      { status: 201 }
+    );
   } catch (error) {
     return apiErrorResponse(error);
   }

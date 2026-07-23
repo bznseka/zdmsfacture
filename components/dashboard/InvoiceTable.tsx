@@ -1,6 +1,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { Invoice } from '@/types';
+import { formatCurrency } from '@/lib/currency';
 import { Eye, Download } from 'lucide-react';
 
 interface InvoiceTableProps {
@@ -91,7 +92,7 @@ export default function InvoiceTable({ invoices }: InvoiceTableProps) {
                   {/* Amount */}
                   <td className="px-6 py-4.5 text-right whitespace-nowrap">
                     <span className="font-bold text-slate-900">
-                      ${invoice.totalUsd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      {formatCurrency(invoice.totalUsd, invoice.currency)}
                     </span>
                   </td>
                   {/* Actions */}

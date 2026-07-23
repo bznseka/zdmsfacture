@@ -16,6 +16,7 @@ import InvoiceTable from '@/components/dashboard/InvoiceTable';
 import TopClients from '@/components/dashboard/TopClients';
 import { useApp } from '@/context/AppContext';
 import { getDisplayName } from '@/lib/display-name';
+import { Currency, formatCurrencyTotals } from '@/lib/currency';
 
 export default function OverviewPage() {
   const router = useRouter();
@@ -24,24 +25,30 @@ export default function OverviewPage() {
 
   // Dynamic calculations based on live invoices list
   const totalInvoicesCount = invoices.length;
-  
-  const totalPaidUsd = invoices
-    .filter(inv => inv.status === 'paid')
-    .reduce((sum, inv) => sum + inv.totalUsd, 0);
 
-  const totalPendingUsd = invoices
-    .filter(inv => inv.status === 'sent')
-    .reduce((sum, inv) => sum + inv.totalUsd, 0);
+  const sumByCurrency = (statusFilter: (typeof invoices)[number]['status']) => {
+    const totals: Partial<Record<Currency, number>> = {};
+    invoices
+      .filter(inv => inv.status === statusFilter)
+      .forEach(inv => {
+        totals[inv.currency] = (totals[inv.currency] || 0) + inv.totalUsd;
+      });
+    return totals;
+  };
 
-  const totalOverdueUsd = invoices
-    .filter(inv => inv.status === 'overdue')
-    .reduce((sum, inv) => sum + inv.totalUsd, 0);
+  const totalPaid = sumByCurrency('paid');
+  const totalPending = sumByCurrency('sent');
+  const totalOverdue = sumByCurrency('overdue');
+
+  // Currencies actually used across the account's invoices, for chart legends
+  const activeCurrencies = Array.from(new Set(invoices.map(inv => inv.currency))) as Currency[];
 
   // Dynamic monthly income grouping (Jan - Jun 2026) for the Bar Chart
   const getMonthlyIncome = () => {
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
-    const incomeMap = { Jan: 0, Feb: 0, Mar: 0, Apr: 0, May: 0, Jun: 0 };
-    
+    const incomeMap: Record<string, { USD: number; EUR: number }> = {};
+    months.forEach(m => { incomeMap[m] = { USD: 0, EUR: 0 }; });
+
     invoices.forEach(inv => {
       if (inv.status === 'draft') return;
       const parts = inv.issueDate.split('/');
@@ -49,9 +56,9 @@ export default function OverviewPage() {
         const monthIndex = parseInt(parts[1], 10) - 1;
         const year = parseInt(parts[2], 10);
         if (year === 2026 && monthIndex >= 0 && monthIndex < 6) {
-          const name = months[monthIndex] as keyof typeof incomeMap;
-          if (incomeMap[name] !== undefined) {
-            incomeMap[name] += inv.totalUsd;
+          const name = months[monthIndex];
+          if (incomeMap[name]) {
+            incomeMap[name][inv.currency] += inv.totalUsd;
           }
         }
       }
@@ -59,7 +66,8 @@ export default function OverviewPage() {
 
     return months.map(m => ({
       month: m,
-      income: incomeMap[m as keyof typeof incomeMap] || 0
+      USD: incomeMap[m].USD,
+      EUR: incomeMap[m].EUR,
     }));
   };
 
@@ -80,23 +88,27 @@ export default function OverviewPage() {
 
   // Dynamic Top Clients ranking
   const getTopClients = () => {
-    const clientMap: { [key: string]: { name: string; totalUsd: number; count: number } } = {};
+    const clientMap: { [key: string]: { name: string; totals: Partial<Record<Currency, number>>; count: number } } = {};
     invoices.forEach(inv => {
       if (inv.status === 'draft') return;
       if (!clientMap[inv.client.name]) {
-        clientMap[inv.client.name] = { name: inv.client.name, totalUsd: 0, count: 0 };
+        clientMap[inv.client.name] = { name: inv.client.name, totals: {}, count: 0 };
       }
-      clientMap[inv.client.name].totalUsd += inv.totalUsd;
-      clientMap[inv.client.name].count += 1;
+      const entry = clientMap[inv.client.name];
+      entry.totals[inv.currency] = (entry.totals[inv.currency] || 0) + inv.totalUsd;
+      entry.count += 1;
     });
 
+    const sumAllCurrencies = (totals: Partial<Record<Currency, number>>) =>
+      Object.values(totals).reduce((sum: number, v) => sum + (v || 0), 0);
+
     return Object.values(clientMap)
-      .sort((a, b) => b.totalUsd - a.totalUsd)
+      .sort((a, b) => sumAllCurrencies(b.totals) - sumAllCurrencies(a.totals))
       .slice(0, 4)
       .map((c, idx) => ({
         id: String(idx + 1),
         name: c.name,
-        totalUsd: c.totalUsd,
+        totals: c.totals,
         invoicesCount: c.count,
         initials: c.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase(),
       }));
@@ -145,7 +157,7 @@ export default function OverviewPage() {
         />
         <StatCard
           title="Revenu payé"
-          valueUsd={`$${totalPaidUsd.toLocaleString('en-US', { minimumFractionDigits: 2 })}`}
+          valueUsd={formatCurrencyTotals(totalPaid)}
           growth={{ value: 14.5, isPositive: true }}
           icon={CheckCircle}
           iconBgColor="bg-emerald-50"
@@ -153,14 +165,14 @@ export default function OverviewPage() {
         />
         <StatCard
           title="Revenu en attente"
-          valueUsd={`$${totalPendingUsd.toLocaleString('en-US', { minimumFractionDigits: 2 })}`}
+          valueUsd={formatCurrencyTotals(totalPending)}
           icon={Clock}
           iconBgColor="bg-amber-50"
           iconTextColor="text-amber-600"
         />
         <StatCard
           title="Revenu en retard"
-          valueUsd={`$${totalOverdueUsd.toLocaleString('en-US', { minimumFractionDigits: 2 })}`}
+          valueUsd={formatCurrencyTotals(totalOverdue)}
           icon={AlertTriangle}
           iconBgColor="bg-rose-50"
           iconTextColor="text-rose-600"
@@ -170,7 +182,7 @@ export default function OverviewPage() {
       {/* Row 2: Income statistics & Status distribution */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in-up opacity-0 [animation-fill-mode:forwards] [animation-delay:300ms]">
         <div className="lg:col-span-2">
-          <IncomeChart data={getMonthlyIncome()} />
+          <IncomeChart data={getMonthlyIncome()} activeCurrencies={activeCurrencies} />
         </div>
         <div>
           <DonutChart data={getStatusPercentage()} />

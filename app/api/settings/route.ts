@@ -33,6 +33,7 @@ export async function PATCH(request: Request) {
     if (body.taxNumber !== undefined) updates.taxNumber = body.taxNumber;
     if (body.taxRate !== undefined) updates.taxRate = String(body.taxRate);
     if (body.mobileMoneyDetails !== undefined) updates.mobileMoneyDetails = body.mobileMoneyDetails;
+    if (body.currency !== undefined) updates.currency = body.currency;
 
     const [row] = await db
       .update(settings)

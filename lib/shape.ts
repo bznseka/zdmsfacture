@@ -25,6 +25,7 @@ type InvoiceRow = {
   taxRate: string;
   taxAmount: string;
   totalUsd: string;
+  currency: string;
   notes: string | null;
 };
 
@@ -73,6 +74,7 @@ export function shapeInvoice(
     taxRate: Number(row.taxRate),
     taxAmount: Number(row.taxAmount),
     totalUsd: Number(row.totalUsd),
+    currency: (row.currency as "USD" | "EUR") || "USD",
     notes: row.notes || "",
     client: client ? shapeClient(client) : UNKNOWN_CLIENT,
     items: items.map(shapeItem),
@@ -89,7 +91,8 @@ export function shapePayment(
     date: string;
   },
   invoiceNumber: string | undefined,
-  clientName: string | undefined
+  clientName: string | undefined,
+  currency: string | undefined
 ) {
   return {
     id: row.id,
@@ -97,6 +100,7 @@ export function shapePayment(
     invoiceNumber: invoiceNumber || "INV-XXXX",
     clientName: clientName || "Client Inconnu",
     amountUsd: Number(row.amountUsd),
+    currency: (currency as "USD" | "EUR") || "USD",
     method: row.method,
     reference: row.reference || "",
     date: row.date,
@@ -113,7 +117,8 @@ export function shapeRefund(
     date: string;
   },
   invoiceNumber: string | undefined,
-  clientName: string | undefined
+  clientName: string | undefined,
+  currency: string | undefined
 ) {
   return {
     id: row.id,
@@ -121,6 +126,7 @@ export function shapeRefund(
     invoiceNumber: invoiceNumber || "INV-XXXX",
     clientName: clientName || "Client Inconnu",
     amountUsd: Number(row.amountUsd),
+    currency: (currency as "USD" | "EUR") || "USD",
     status: row.status,
     reason: row.reason || "",
     date: row.date,
@@ -136,6 +142,7 @@ export function shapeSettings(row: {
   taxRate: string;
   mobileMoneyDetails: string | null;
   logoUrl: string | null;
+  currency: string;
 }) {
   return {
     companyName: row.companyName,
@@ -146,5 +153,6 @@ export function shapeSettings(row: {
     taxRate: Number(row.taxRate),
     mobileMoneyDetails: row.mobileMoneyDetails || "",
     logoUrl: row.logoUrl || "",
+    currency: (row.currency as "USD" | "EUR") || "USD",
   };
 }

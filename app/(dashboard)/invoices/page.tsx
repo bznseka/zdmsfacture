@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useApp } from '@/context/AppContext';
 import { Search, Plus, Eye, Download, Trash2 } from 'lucide-react';
 import { InvoiceStatus } from '@/types';
+import { formatCurrency } from '@/lib/currency';
 
 export default function InvoicesPage() {
   const router = useRouter();
@@ -174,7 +175,7 @@ export default function InvoicesPage() {
                       {/* Billed totals */}
                       <td className="px-6 py-4.5 text-right whitespace-nowrap">
                         <span className="font-bold text-slate-900">
-                          ${invoice.totalUsd.toLocaleString('en-US')} USD
+                          {formatCurrency(invoice.totalUsd, invoice.currency)}
                         </span>
                       </td>
                       {/* Actions */}

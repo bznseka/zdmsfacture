@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useApp } from '@/context/AppContext';
 import { Plus, Search, X, Save } from 'lucide-react';
 import { Refund } from '@/types';
+import { formatCurrency } from '@/lib/currency';
 
 export default function RefundsPage() {
   const { invoices, refunds, addRefund, loading } = useApp();
@@ -32,6 +33,8 @@ export default function RefundsPage() {
     });
     setIsModalOpen(true);
   };
+
+  const selectedInvoice = invoices.find(i => i.id === formData.invoiceId);
 
   const handleInvoiceChange = (id: string) => {
     const inv = invoices.find(i => i.id === id);
@@ -214,7 +217,7 @@ export default function RefundsPage() {
                         </span>
                       </td>
                       <td className="px-6 py-4.5 text-right whitespace-nowrap">
-                        <span className="font-bold text-slate-900">${refund.amountUsd.toLocaleString()} USD</span>
+                        <span className="font-bold text-slate-900">{formatCurrency(refund.amountUsd, refund.currency)}</span>
                       </td>
                     </tr>
                   );
@@ -264,7 +267,7 @@ export default function RefundsPage() {
                 >
                   {invoices.filter(i => i.status === 'paid').map(i => (
                     <option key={i.id} value={i.id}>
-                      {i.invoiceNumber} - {i.client.name} (${i.totalUsd} USD)
+                      {i.invoiceNumber} - {i.client.name} ({formatCurrency(i.totalUsd, i.currency)})
                     </option>
                   ))}
                   {invoices.filter(i => i.status === 'paid').length === 0 && (
@@ -276,7 +279,7 @@ export default function RefundsPage() {
               {/* Amount */}
               <div>
                 <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">
-                  Montant à rembourser (USD)
+                  Montant à rembourser ({selectedInvoice?.currency || 'USD'})
                 </label>
                 <input
                   type="number"

@@ -1,3 +1,5 @@
+import { Currency } from '@/lib/currency';
+
 export type InvoiceStatus = 'draft' | 'sent' | 'paid' | 'overdue';
 
 export interface Client {
@@ -29,6 +31,7 @@ export interface Invoice {
   taxRate: number;
   taxAmount: number;
   totalUsd: number;
+  currency: Currency;
   notes?: string;
 }
 
@@ -41,6 +44,7 @@ export interface CompanySettings {
   taxRate: number;
   mobileMoneyDetails: string;
   logoUrl: string;
+  currency: Currency;
 }
 
 export interface Payment {
@@ -49,6 +53,7 @@ export interface Payment {
   invoiceNumber: string;
   clientName: string;
   amountUsd: number;
+  currency: Currency;
   method: 'cash' | 'mobile_money' | 'bank';
   reference: string;
   date: string;
@@ -60,6 +65,7 @@ export interface Refund {
   invoiceNumber: string;
   clientName: string;
   amountUsd: number;
+  currency: Currency;
   status: 'pending' | 'approved' | 'rejected';
   reason: string;
   date: string;
