@@ -1,6 +1,10 @@
 import { Currency } from '@/lib/currency';
 
 export type InvoiceStatus = 'draft' | 'sent' | 'paid' | 'overdue';
+export type QuoteStatus = 'draft' | 'sent' | 'accepted' | 'rejected';
+export type DownPaymentStatus = 'draft' | 'sent' | 'paid';
+export type CreditNoteStatus = 'draft' | 'issued';
+export type ClientCategory = 'individual' | 'business';
 
 export interface Client {
   id: string;
@@ -9,6 +13,7 @@ export interface Client {
   phone: string;
   address: string;
   country: string;
+  category: ClientCategory;
 }
 
 export interface LineItem {
@@ -69,5 +74,49 @@ export interface Refund {
   status: 'pending' | 'approved' | 'rejected';
   reason: string;
   date: string;
+}
+
+export interface Quote {
+  id: string;
+  quoteNumber: string;
+  client: Client;
+  status: QuoteStatus;
+  issueDate: string;
+  validUntil: string;
+  items?: LineItem[];
+  subtotal: number;
+  taxRate: number;
+  taxAmount: number;
+  total: number;
+  currency: Currency;
+  notes?: string;
+  convertedInvoiceId?: string | null;
+}
+
+export interface DownPayment {
+  id: string;
+  downPaymentNumber: string;
+  client: Client;
+  invoiceId?: string | null;
+  invoiceNumber?: string | null;
+  status: DownPaymentStatus;
+  issueDate: string;
+  description: string;
+  amount: number;
+  currency: Currency;
+  notes?: string;
+}
+
+export interface CreditNote {
+  id: string;
+  creditNoteNumber: string;
+  invoiceId: string;
+  invoiceNumber: string;
+  clientName: string;
+  status: CreditNoteStatus;
+  issueDate: string;
+  amount: number;
+  reason: string;
+  currency: Currency;
 }
 

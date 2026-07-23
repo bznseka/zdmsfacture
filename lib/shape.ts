@@ -5,6 +5,7 @@ type ClientRow = {
   phone: string | null;
   address: string | null;
   country: string | null;
+  category?: string;
 };
 
 type ItemRow = {
@@ -37,6 +38,7 @@ export function shapeClient(row: ClientRow) {
     phone: row.phone || "",
     address: row.address || "",
     country: row.country || "",
+    category: (row.category as "individual" | "business") || "individual",
   };
 }
 
@@ -57,6 +59,7 @@ const UNKNOWN_CLIENT = {
   phone: "",
   address: "",
   country: "",
+  category: "individual" as const,
 };
 
 export function shapeInvoice(
@@ -130,6 +133,102 @@ export function shapeRefund(
     status: row.status,
     reason: row.reason || "",
     date: row.date,
+  };
+}
+
+type QuoteRow = {
+  id: string;
+  quoteNumber: string;
+  status: string;
+  issueDate: string;
+  validUntil: string;
+  subtotal: string;
+  taxRate: string;
+  taxAmount: string;
+  total: string;
+  currency: string;
+  notes: string | null;
+  convertedInvoiceId: string | null;
+};
+
+export function shapeQuote(
+  row: QuoteRow,
+  client: ClientRow | null | undefined,
+  items: ItemRow[]
+) {
+  return {
+    id: row.id,
+    quoteNumber: row.quoteNumber,
+    status: row.status,
+    issueDate: row.issueDate,
+    validUntil: row.validUntil,
+    subtotal: Number(row.subtotal),
+    taxRate: Number(row.taxRate),
+    taxAmount: Number(row.taxAmount),
+    total: Number(row.total),
+    currency: (row.currency as "USD" | "EUR") || "USD",
+    notes: row.notes || "",
+    convertedInvoiceId: row.convertedInvoiceId,
+    client: client ? shapeClient(client) : UNKNOWN_CLIENT,
+    items: items.map(shapeItem),
+  };
+}
+
+export function shapeDownPayment(
+  row: {
+    id: string;
+    downPaymentNumber: string;
+    invoiceId: string | null;
+    status: string;
+    issueDate: string;
+    description: string;
+    amount: string;
+    currency: string;
+    notes: string | null;
+  },
+  client: ClientRow | null | undefined,
+  invoiceNumber: string | null | undefined
+) {
+  return {
+    id: row.id,
+    downPaymentNumber: row.downPaymentNumber,
+    invoiceId: row.invoiceId,
+    invoiceNumber: invoiceNumber || null,
+    status: row.status,
+    issueDate: row.issueDate,
+    description: row.description,
+    amount: Number(row.amount),
+    currency: (row.currency as "USD" | "EUR") || "USD",
+    notes: row.notes || "",
+    client: client ? shapeClient(client) : UNKNOWN_CLIENT,
+  };
+}
+
+export function shapeCreditNote(
+  row: {
+    id: string;
+    creditNoteNumber: string;
+    invoiceId: string;
+    status: string;
+    issueDate: string;
+    amount: string;
+    reason: string;
+    currency: string;
+  },
+  invoiceNumber: string | undefined,
+  clientName: string | undefined
+) {
+  return {
+    id: row.id,
+    creditNoteNumber: row.creditNoteNumber,
+    invoiceId: row.invoiceId,
+    invoiceNumber: invoiceNumber || "INV-XXXX",
+    clientName: clientName || "Client Inconnu",
+    status: row.status,
+    issueDate: row.issueDate,
+    amount: Number(row.amount),
+    reason: row.reason || "",
+    currency: (row.currency as "USD" | "EUR") || "USD",
   };
 }
 

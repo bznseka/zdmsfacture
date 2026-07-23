@@ -5,18 +5,21 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useApp } from '@/context/AppContext';
 import { signOut } from 'next-auth/react';
-import { 
-  LayoutDashboard, 
-  FileText, 
-  Users, 
-  CreditCard, 
-  Undo2, 
-  Sparkles, 
-  Settings, 
+import {
+  LayoutDashboard,
+  FileText,
+  Users,
+  CreditCard,
+  Undo2,
+  Sparkles,
+  Settings,
   LogOut,
   X,
   Wallet,
-  HelpCircle
+  HelpCircle,
+  FileSignature,
+  PiggyBank,
+  FileMinus
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -53,6 +56,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       items: [
         { name: 'Vue d’ensemble', href: '/overview', icon: LayoutDashboard },
         { name: 'Factures', href: '/invoices', icon: FileText },
+        { name: 'Devis', href: '/quotes', icon: FileSignature },
         { name: 'Clients', href: '/clients', icon: Users },
         { name: 'Paiements', href: '/payments', icon: CreditCard },
       ]
@@ -60,6 +64,8 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     {
       title: 'Gestion',
       items: [
+        { name: 'Acomptes', href: '/down-payments', icon: PiggyBank },
+        { name: 'Avoirs', href: '/credit-notes', icon: FileMinus },
         { name: 'Remboursements', href: '/refunds', icon: Undo2 },
         { name: 'Abonnements', href: '/subscriptions', icon: Sparkles },
       ]

@@ -23,6 +23,7 @@ function ClientsPageContent() {
     phone: '',
     address: '',
     country: '',
+    category: 'individual' as 'individual' | 'business',
   });
 
   const handleOpenAddModal = () => {
@@ -33,6 +34,7 @@ function ClientsPageContent() {
       phone: '',
       address: '',
       country: '',
+      category: 'individual',
     });
     setIsModalOpen(true);
   };
@@ -45,6 +47,7 @@ function ClientsPageContent() {
       phone: client.phone,
       address: client.address,
       country: client.country || '',
+      category: client.category || 'individual',
     });
     setIsModalOpen(true);
   };
@@ -152,11 +155,20 @@ function ClientsPageContent() {
                       <h3 className="text-sm font-bold text-slate-800 line-clamp-1">
                         {client.name}
                       </h3>
-                      {client.country && (
-                        <span className="text-[10px] bg-slate-100 text-slate-500 font-bold px-2 py-0.5 rounded-lg border border-slate-200/60 mt-1 inline-block">
-                          {client.country}
+                      <div className="flex items-center gap-1.5 mt-1">
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-lg border inline-block ${
+                          client.category === 'business'
+                            ? 'bg-primary-light text-primary border-primary/20'
+                            : 'bg-slate-100 text-slate-500 border-slate-200/60'
+                        }`}>
+                          {client.category === 'business' ? 'Professionnel' : 'Particulier'}
                         </span>
-                      )}
+                        {client.country && (
+                          <span className="text-[10px] bg-slate-100 text-slate-500 font-bold px-2 py-0.5 rounded-lg border border-slate-200/60 inline-block">
+                            {client.country}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
 
@@ -285,6 +297,23 @@ function ClientsPageContent() {
                   onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
                   className="w-full h-11 px-4 text-sm bg-slate-50 border border-slate-200/80 rounded-xl focus:outline-none focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all duration-200"
                 />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">
+                  Type de client
+                </label>
+                <select
+                  value={formData.category}
+                  onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value as 'individual' | 'business' }))}
+                  className="w-full h-11 px-4 text-sm bg-slate-50 border border-slate-200/80 rounded-xl focus:outline-none focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all duration-200"
+                >
+                  <option value="individual">Particulier</option>
+                  <option value="business">Professionnel</option>
+                </select>
+                <p className="text-[11px] text-slate-400 font-medium mt-1.5">
+                  Seuls les clients &quot;Professionnel&quot; peuvent recevoir un devis.
+                </p>
               </div>
 
               {/* Modal Footer Actions */}

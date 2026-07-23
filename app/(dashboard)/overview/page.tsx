@@ -43,11 +43,16 @@ export default function OverviewPage() {
   // Currencies actually used across the account's invoices, for chart legends
   const activeCurrencies = Array.from(new Set(invoices.map(inv => inv.currency))) as Currency[];
 
-  // Dynamic monthly income grouping (Jan - Jun 2026) for the Bar Chart
+  // Dynamic monthly income grouping (12 months of the current year) for the Bar Chart
+  const FR_MONTH_ABBREVIATIONS = [
+    'janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin',
+    'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.',
+  ];
+
   const getMonthlyIncome = () => {
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
-    const incomeMap: Record<string, { USD: number; EUR: number }> = {};
-    months.forEach(m => { incomeMap[m] = { USD: 0, EUR: 0 }; });
+    const currentYear = new Date().getFullYear();
+    const yearSuffix = String(currentYear).slice(-2);
+    const monthlyTotals: { USD: number; EUR: number }[] = Array.from({ length: 12 }, () => ({ USD: 0, EUR: 0 }));
 
     invoices.forEach(inv => {
       if (inv.status === 'draft') return;
@@ -55,19 +60,16 @@ export default function OverviewPage() {
       if (parts.length === 3) {
         const monthIndex = parseInt(parts[1], 10) - 1;
         const year = parseInt(parts[2], 10);
-        if (year === 2026 && monthIndex >= 0 && monthIndex < 6) {
-          const name = months[monthIndex];
-          if (incomeMap[name]) {
-            incomeMap[name][inv.currency] += inv.totalUsd;
-          }
+        if (year === currentYear && monthIndex >= 0 && monthIndex < 12) {
+          monthlyTotals[monthIndex][inv.currency] += inv.totalUsd;
         }
       }
     });
 
-    return months.map(m => ({
-      month: m,
-      USD: incomeMap[m].USD,
-      EUR: incomeMap[m].EUR,
+    return FR_MONTH_ABBREVIATIONS.map((label, idx) => ({
+      month: `${label} ${yearSuffix}`,
+      USD: monthlyTotals[idx].USD,
+      EUR: monthlyTotals[idx].EUR,
     }));
   };
 

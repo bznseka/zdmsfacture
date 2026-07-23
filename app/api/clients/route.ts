@@ -33,6 +33,7 @@ export async function POST(request: Request) {
         phone: body.phone,
         address: body.address,
         country: body.country || "",
+        category: body.category || "individual",
         userId,
       })
       .returning();

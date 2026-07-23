@@ -19,6 +19,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
         phone: body.phone,
         address: body.address,
         country: body.country,
+        category: body.category,
       })
       .where(and(eq(clients.id, id), eq(clients.userId, userId)))
       .returning();

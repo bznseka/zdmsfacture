@@ -29,18 +29,25 @@ export const users = pgTable(
   ]
 );
 
-export const clients = pgTable("clients", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  name: text("name").notNull(),
-  email: text("email").notNull(),
-  phone: text("phone"),
-  address: text("address"),
-  country: text("country"),
-  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
-  userId: uuid("user_id")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-});
+export const clients = pgTable(
+  "clients",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    name: text("name").notNull(),
+    email: text("email").notNull(),
+    phone: text("phone"),
+    address: text("address"),
+    country: text("country"),
+    category: text("category").notNull().default("individual"),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+  },
+  (table) => [
+    check("clients_category_check", sql`${table.category} in ('individual','business')`),
+  ]
+);
 
 export const invoices = pgTable(
   "invoices",
@@ -123,6 +130,99 @@ export const refunds = pgTable(
   },
   (table) => [
     check("refunds_status_check", sql`${table.status} in ('pending','approved','rejected')`),
+  ]
+);
+
+export const quotes = pgTable(
+  "quotes",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    quoteNumber: text("quote_number").notNull(),
+    clientId: uuid("client_id").references(() => clients.id),
+    status: text("status").notNull().default("draft"),
+    issueDate: date("issue_date").notNull(),
+    validUntil: date("valid_until").notNull(),
+    subtotal: numeric("subtotal").notNull().default("0"),
+    taxRate: numeric("tax_rate").notNull().default("18"),
+    taxAmount: numeric("tax_amount").notNull().default("0"),
+    total: numeric("total").notNull().default("0"),
+    currency: text("currency").notNull().default("USD"),
+    notes: text("notes"),
+    convertedInvoiceId: uuid("converted_invoice_id").references(() => invoices.id),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+  },
+  (table) => [
+    unique("quotes_user_id_quote_number_key").on(table.userId, table.quoteNumber),
+    check(
+      "quotes_status_check",
+      sql`${table.status} in ('draft','sent','accepted','rejected')`
+    ),
+    check("quotes_currency_check", sql`${table.currency} in ('USD','EUR')`),
+  ]
+);
+
+export const quoteItems = pgTable("quote_items", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  quoteId: uuid("quote_id")
+    .notNull()
+    .references(() => quotes.id, { onDelete: "cascade" }),
+  description: text("description").notNull(),
+  quantity: numeric("quantity").notNull().default("1"),
+  unitPrice: numeric("unit_price").notNull().default("0"),
+  total: numeric("total").notNull().default("0"),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+});
+
+export const downPayments = pgTable(
+  "down_payments",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    downPaymentNumber: text("down_payment_number").notNull(),
+    clientId: uuid("client_id").references(() => clients.id),
+    invoiceId: uuid("invoice_id").references(() => invoices.id),
+    status: text("status").notNull().default("draft"),
+    issueDate: date("issue_date").notNull(),
+    description: text("description").notNull().default(""),
+    amount: numeric("amount").notNull().default("0"),
+    currency: text("currency").notNull().default("USD"),
+    notes: text("notes"),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+  },
+  (table) => [
+    unique("down_payments_user_id_number_key").on(table.userId, table.downPaymentNumber),
+    check("down_payments_status_check", sql`${table.status} in ('draft','sent','paid')`),
+    check("down_payments_currency_check", sql`${table.currency} in ('USD','EUR')`),
+  ]
+);
+
+export const creditNotes = pgTable(
+  "credit_notes",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    creditNoteNumber: text("credit_note_number").notNull(),
+    invoiceId: uuid("invoice_id")
+      .notNull()
+      .references(() => invoices.id, { onDelete: "cascade" }),
+    status: text("status").notNull().default("draft"),
+    issueDate: date("issue_date").notNull(),
+    amount: numeric("amount").notNull().default("0"),
+    reason: text("reason").notNull().default(""),
+    currency: text("currency").notNull().default("USD"),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+  },
+  (table) => [
+    unique("credit_notes_user_id_number_key").on(table.userId, table.creditNoteNumber),
+    check("credit_notes_status_check", sql`${table.status} in ('draft','issued')`),
+    check("credit_notes_currency_check", sql`${table.currency} in ('USD','EUR')`),
   ]
 );
 
@@ -222,4 +322,26 @@ export const paymentsRelations = relations(payments, ({ one }) => ({
 
 export const refundsRelations = relations(refunds, ({ one }) => ({
   invoice: one(invoices, { fields: [refunds.invoiceId], references: [invoices.id] }),
+}));
+
+export const quotesRelations = relations(quotes, ({ one, many }) => ({
+  client: one(clients, { fields: [quotes.clientId], references: [clients.id] }),
+  items: many(quoteItems),
+  convertedInvoice: one(invoices, {
+    fields: [quotes.convertedInvoiceId],
+    references: [invoices.id],
+  }),
+}));
+
+export const quoteItemsRelations = relations(quoteItems, ({ one }) => ({
+  quote: one(quotes, { fields: [quoteItems.quoteId], references: [quotes.id] }),
+}));
+
+export const downPaymentsRelations = relations(downPayments, ({ one }) => ({
+  client: one(clients, { fields: [downPayments.clientId], references: [clients.id] }),
+  invoice: one(invoices, { fields: [downPayments.invoiceId], references: [invoices.id] }),
+}));
+
+export const creditNotesRelations = relations(creditNotes, ({ one }) => ({
+  invoice: one(invoices, { fields: [creditNotes.invoiceId], references: [invoices.id] }),
 }));
