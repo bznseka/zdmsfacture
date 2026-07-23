@@ -1,19 +1,20 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useApp } from '@/context/AppContext';
 import { Search, Plus, Eye, Download, Trash2 } from 'lucide-react';
 import { InvoiceStatus } from '@/types';
 import { formatCurrency } from '@/lib/currency';
 
-export default function InvoicesPage() {
+function InvoicesPageContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { invoices, deleteInvoice } = useApp();
-  
+
   // Search & Filter state
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState(() => searchParams.get('q') || '');
   const [statusFilter, setStatusFilter] = useState<InvoiceStatus | 'all'>('all');
 
   // Filter logic
@@ -223,5 +224,13 @@ export default function InvoicesPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function InvoicesPage() {
+  return (
+    <Suspense>
+      <InvoicesPageContent />
+    </Suspense>
   );
 }

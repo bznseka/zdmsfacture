@@ -1,15 +1,17 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useApp } from '@/context/AppContext';
 import { Plus, Search, Edit2, Trash2, Mail, Phone, MapPin, X, Save } from 'lucide-react';
 import { Client } from '@/types';
 
-export default function ClientsPage() {
+function ClientsPageContent() {
   const { clients, addClient, updateClient, deleteClient } = useApp();
-  
+  const searchParams = useSearchParams();
+
   // Search state
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState(() => searchParams.get('q') || '');
   
   // Modal form states
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -307,5 +309,13 @@ export default function ClientsPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function ClientsPage() {
+  return (
+    <Suspense>
+      <ClientsPageContent />
+    </Suspense>
   );
 }
